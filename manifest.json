@@ -1,12 +1,10 @@
 {
   "name": "KA Business — Deo Digital Solutions",
   "short_name": "DeoBiz",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#070A0F",
-  "theme_color": "#056FB2",
+  "background_color": "#ffffff",
+  "theme_color": "#0b5bd8",
   "icons": [
     { "src": "logo.png", "sizes": "192x192", "type": "image/png" },
     { "src": "logo.png", "sizes": "512x512", "type": "image/png" }

@@ -2,18 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#056FB2" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Deo Digital Admin">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Professional business management system for DEO DIGITAL SOLUTIONS">
+  
   <title>Deo Digital Admin Portal — DEO DIGITAL SOLUTIONS</title>
 
-  <!-- Favicon / icons -->
-  <link rel="icon" href="favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-
-  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="logo.png">
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
 
   <!-- Firebase (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -25,106 +29,331 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body>
-  <!-- App Loader (PWA launch / page load) -->
+<body class="app-body">
+  <!-- App Loader -->
   <div id="appLoader" class="app-loader" aria-live="polite">
     <div class="loader-card">
-      <img src="logo.png" class="loader-logo" alt="Deo Digital Solutions">
+      <div class="logo-container">
+        <img src="logo.png" class="loader-logo" alt="Deo Digital Solutions" width="80" height="80">
+        <div class="logo-glow"></div>
+      </div>
       <div class="loader-title">Deo Digital Admin Portal</div>
-      <div class="loader-sub">Loading…</div>
-      <div class="loader-bar"><span></span></div>
+      <div class="loader-sub">Professional Business Management</div>
+      <div class="loader-bar">
+        <div class="loader-progress"></div>
+      </div>
+      <div class="loader-features">
+        <span>✓ Secure Authentication</span>
+        <span>✓ Real-time Dashboard</span>
+        <span>✓ Professional Documents</span>
+      </div>
     </div>
   </div>
 
   <!-- SIDEBAR -->
   <aside id="sidebar" class="sidebar hidden" aria-label="Sidebar navigation">
     <div class="sidebar-header">
-      <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" />
+      <div class="logo-wrapper">
+        <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" width="48" height="48">
+        <div class="logo-badge">PRO</div>
+      </div>
       <div class="company-info">
         <div class="company-name">DEO DIGITAL SOLUTIONS</div>
         <div class="company-slogan">Visualising Your Vision</div>
+        <div class="company-version">Professional Edition v2.0</div>
       </div>
+      <button class="sidebar-close" aria-label="Close sidebar">&times;</button>
     </div>
 
     <nav class="sidebar-nav" aria-label="Sections">
-      <button data-target="dashboard" class="side-btn">Dashboard</button>
-      <button data-target="documents" class="side-btn">Documents</button>
-      <button data-target="newSale" class="side-btn">New Sale</button>
-      <button data-target="quotes" class="side-btn">Quotes</button>
-      <button data-target="expenses" class="side-btn">Expenses</button>
-      <button data-target="capital" class="side-btn">Capital</button>
-      <button data-target="clients" class="side-btn">Clients</button>
-      <button data-target="drafts" class="side-btn">Drafts</button>
-      <button data-target="reports" class="side-btn">Reports</button>
-      <button data-target="settings" class="side-btn">Settings</button>
+      <div class="nav-group">
+        <div class="nav-label">Dashboard</div>
+        <button data-target="dashboard" class="side-btn active">
+          <span class="side-btn-icon">📊</span>
+          <span class="side-btn-text">Dashboard</span>
+        </button>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Documents</div>
+        <button data-target="documents" class="side-btn">
+          <span class="side-btn-icon">📁</span>
+          <span class="side-btn-text">Documents</span>
+        </button>
+        <button data-target="newSale" class="side-btn">
+          <span class="side-btn-icon">➕</span>
+          <span class="side-btn-text">New Sale</span>
+        </button>
+        <button data-target="quotes" class="side-btn">
+          <span class="side-btn-icon">📋</span>
+          <span class="side-btn-text">Quotes</span>
+          <span class="nav-badge" id="pendingQuotesCountSidebar">0</span>
+        </button>
+        <button data-target="drafts" class="side-btn">
+          <span class="side-btn-icon">📝</span>
+          <span class="side-btn-text">Drafts</span>
+          <span class="nav-badge" id="draftCountSidebar">0</span>
+        </button>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Finance</div>
+        <button data-target="expenses" class="side-btn">
+          <span class="side-btn-icon">💰</span>
+          <span class="side-btn-text">Expenses</span>
+        </button>
+        <button data-target="capital" class="side-btn">
+          <span class="side-btn-icon">🏦</span>
+          <span class="side-btn-text">Capital</span>
+        </button>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Clients</div>
+        <button data-target="clients" class="side-btn">
+          <span class="side-btn-icon">👥</span>
+          <span class="side-btn-text">Clients</span>
+        </button>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Reports</div>
+        <button data-target="reports" class="side-btn">
+          <span class="side-btn-icon">📈</span>
+          <span class="side-btn-text">Reports</span>
+        </button>
+      </div>
+      
+      <div class="nav-group">
+        <div class="nav-label">Settings</div>
+        <button data-target="settings" class="side-btn">
+          <span class="side-btn-icon">⚙️</span>
+          <span class="side-btn-text">Settings</span>
+        </button>
+      </div>
     </nav>
 
     <div class="sidebar-footer">
-      <div><a href="mailto:deoug45@gmail.com">deoug45@gmail.com</a></div>
-      <div><a href="https://www.deodigital.com" target="_blank" rel="noopener">www.deodigital.com</a></div>
-      <div>Tel: 0762886186</div>
-      <div style="margin-top:8px; opacity:.85" id="sbUserLine"></div>
+      <div class="user-info">
+        <div class="user-avatar">
+          <span class="avatar-text">👤</span>
+        </div>
+        <div class="user-details">
+          <div id="sbUserLine" class="user-email">admin@deodigital.com</div>
+          <div class="user-status">Admin</div>
+        </div>
+      </div>
+      
+      <div class="company-contacts">
+        <a href="mailto:deoug45@gmail.com" class="contact-link">
+          <span class="contact-icon">✉️</span> deoug45@gmail.com
+        </a>
+        <a href="https://www.deodigital.com" target="_blank" rel="noopener" class="contact-link">
+          <span class="contact-icon">🌐</span> www.deodigital.com
+        </a>
+        <div class="contact-link">
+          <span class="contact-icon">📱</span> 0762886186
+        </div>
+      </div>
+      
+      <button id="signOutBtn" class="btn sign-out-btn">
+        <span class="btn-icon">🚪</span> Sign Out
+      </button>
     </div>
   </aside>
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="top-left">
-      <!-- Optional hamburger (logo also toggles menu) -->
-      <button id="hamburger" class="hamburger" aria-label="Menu">☰</button>
-
-      <div class="brand">
-        <img src="logo.png" alt="Logo" id="brandLogo" role="button" tabindex="0" title="Menu" />
-        <div class="brand-text">
-          <h1>DEO DIGITAL SOLUTIONS</h1>
-          <small>Deo Digital Admin Portal • Visualising Your Vision</small>
+    <div class="topbar-content">
+      <div class="top-left">
+        <button id="hamburger" class="hamburger" aria-label="Menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+        <div class="brand">
+          <div class="brand-logo" role="button" tabindex="0" title="Menu" id="brandLogo">
+            <img src="logo.png" alt="DEO DIGITAL SOLUTIONS Logo" width="36" height="36">
+            <div class="brand-pulse"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">DEO DIGITAL ADMIN</h1>
+            <small class="brand-subtitle">Professional Business Portal</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="top-center">
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <span class="stat-label">Today</span>
+            <span class="stat-value" id="todayRevenue">UGX 0</span>
+          </div>
+          <div class="quick-stat">
+            <span class="stat-label">Pending</span>
+            <span class="stat-value" id="pendingDocs">0</span>
+          </div>
+          <div class="quick-stat">
+            <span class="stat-label">Active</span>
+            <span class="stat-value online-status">●</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="top-right">
+        <div class="top-actions">
+          <button class="btn-icon" id="notificationsBtn" aria-label="Notifications">
+            <span class="icon">🔔</span>
+            <span class="badge">3</span>
+          </button>
+          <button class="btn-icon" id="fullscreenBtn" aria-label="Fullscreen">
+            <span class="icon">⛶</span>
+          </button>
+          <button class="btn-icon" id="themeToggle" aria-label="Toggle theme">
+            <span class="icon">🌙</span>
+          </button>
+          <button id="signOutBtnTop" class="btn btn-sm">
+            <span class="btn-icon">🚪</span> Sign Out
+          </button>
         </div>
       </div>
     </div>
-
-    <div class="top-right">
-      <div class="contact-mini">
-        <a href="mailto:deoug45@gmail.com">deoug45@gmail.com</a>
-        <a href="https://www.deodigital.com" target="_blank" rel="noopener">www.deodigital.com</a>
-      </div>
-      <button id="signOutBtnTop" class="btn">Sign out</button>
-    </div>
+    
+    <!-- Progress Bar -->
+    <div class="topbar-progress" id="topbarProgress"></div>
   </header>
 
-  <main id="app">
-    <!-- AUTH -->
-    <section id="auth" class="panel card">
-      <div class="auth-wrap">
+  <main id="app" class="app-main">
+    <!-- AUTH SECTION - Premium Design -->
+    <section id="auth" class="panel auth-panel">
+      <div class="auth-container">
         <div class="auth-hero">
-          <div class="logo-row">
-            <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo">
-            <div>
-              <div class="title">DEO DIGITAL SOLUTIONS</div>
-              <div class="tag">Visualising Your Vision</div>
+          <div class="hero-content">
+            <div class="hero-logo">
+              <img src="logo.png" alt="DEO DIGITAL SOLUTIONS">
+              <div class="logo-aura"></div>
+            </div>
+            <h1 class="hero-title">DEO DIGITAL SOLUTIONS</h1>
+            <p class="hero-tagline">Visualising Your Vision</p>
+            
+            <div class="hero-features">
+              <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-content">
+                  <h3>Real-time Dashboard</h3>
+                  <p>Monitor your business performance instantly</p>
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <div class="feature-content">
+                  <h3>Professional Documents</h3>
+                  <p>Generate invoices, receipts & quotes with QR verification</p>
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <div class="feature-content">
+                  <h3>Mobile-First Design</h3>
+                  <p>Works perfectly on all devices</p>
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-content">
+                  <h3>Secure & Private</h3>
+                  <p>Your data is encrypted and protected</p>
+                </div>
+              </div>
             </div>
           </div>
-
-          <ul class="bullets">
-            <li>Manage Sales, Quotes, Expenses, Capital and Clients.</li>
-            <li>Professional documents with Stamp, QR verification and Signature.</li>
-            <li>Admin-only internal access.</li>
-          </ul>
         </div>
-
-        <div class="auth-form">
-          <h2>Admin Sign In</h2>
-          <div class="auth-sub">Sign in to manage your business paperwork digitally.</div>
-
-          <div class="grid">
-            <input id="email" type="email" placeholder="admin@domain.com" autocomplete="username" />
-            <input id="password" type="password" placeholder="password" autocomplete="current-password" />
-          </div>
-
-          <div class="actions">
-            <button id="signInBtn" class="btn primary">Sign in</button>
-            <button id="signOutBtn" class="btn ghost hidden" type="button">Sign out</button>
+        
+        <div class="auth-form-section">
+          <div class="auth-form-card">
+            <div class="form-header">
+              <h2>Welcome Back</h2>
+              <p class="form-subtitle">Sign in to your admin portal</p>
+            </div>
+            
+            <form class="auth-form" id="loginForm">
+              <div class="form-group">
+                <label for="email" class="form-label">Email Address</label>
+                <div class="input-with-icon">
+                  <span class="input-icon">✉️</span>
+                  <input 
+                    id="email" 
+                    type="email" 
+                    placeholder="admin@deodigital.com" 
+                    autocomplete="username"
+                    required
+                    class="form-input"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-with-icon">
+                  <span class="input-icon">🔒</span>
+                  <input 
+                    id="password" 
+                    type="password" 
+                    placeholder="••••••••" 
+                    autocomplete="current-password"
+                    required
+                    class="form-input"
+                  >
+                  <button type="button" class="password-toggle" id="togglePassword">
+                    <span class="toggle-icon">👁️</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="form-options">
+                <label class="checkbox">
+                  <input type="checkbox" id="rememberMe">
+                  <span class="checkmark"></span>
+                  Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot password?</a>
+              </div>
+              
+              <button type="button" id="signInBtn" class="btn btn-primary btn-block btn-lg">
+                <span class="btn-icon">→</span>
+                Sign In to Dashboard
+              </button>
+              
+              <div class="auth-divider">
+                <span>Or continue with</span>
+              </div>
+              
+              <div class="social-auth">
+                <button type="button" class="btn btn-google">
+                  <span class="btn-icon">G</span>
+                  Google
+                </button>
+                <button type="button" class="btn btn-apple">
+                  <span class="btn-icon">🍎</span>
+                  Apple
+                </button>
+              </div>
+            </form>
+            
+            <div class="auth-footer">
+              <p>Secure login powered by <strong>Firebase Auth</strong></p>
+              <p class="small">Tip: Use <b>https</b> for full PWA features</p>
+            </div>
           </div>
         </div>
       </div>
@@ -132,519 +361,2331 @@
 
     <!-- DASHBOARD -->
     <section id="dashboard" class="panel card hidden">
-      <div class="dash-top">
+      <div class="dash-header">
         <div>
-          <h2>Dashboard</h2>
-          <small>Real-time overview</small>
+          <h2 class="dash-title">Dashboard</h2>
+          <p class="dash-subtitle">Real-time overview of your business</p>
+        </div>
+        <div class="dash-actions">
+          <button class="btn" id="refreshDashboard">
+            <span class="btn-icon">🔄</span> Refresh
+          </button>
+          <div class="date-range">
+            <span class="current-month" id="currentMonth">January 2024</span>
+          </div>
         </div>
       </div>
-
-      <div class="stats-grid">
-        <div class="stat card s-blue">
-          <div class="stat-title">Revenue</div>
-          <div class="stat-value" id="rangeRevenue">UGX 0</div>
+      
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-revenue">
+          <div class="kpi-header">
+            <span class="kpi-icon">💰</span>
+            <span class="kpi-trend up">↑ 12%</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Monthly Revenue</div>
+            <div class="kpi-value" id="rangeRevenue">UGX 0</div>
+            <div class="kpi-desc">This month's sales</div>
+          </div>
+          <div class="kpi-footer">
+            <a href="#" class="kpi-link" data-target="documents">View details →</a>
+          </div>
         </div>
-        <div class="stat card s-green">
-          <div class="stat-title">Net Profit</div>
-          <div class="stat-value" id="rangeProfit">UGX 0</div>
+        
+        <div class="kpi-card kpi-profit">
+          <div class="kpi-header">
+            <span class="kpi-icon">📈</span>
+            <span class="kpi-trend up">↑ 8%</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Net Profit</div>
+            <div class="kpi-value" id="rangeProfit">UGX 0</div>
+            <div class="kpi-desc">After expenses</div>
+          </div>
+          <div class="kpi-footer">
+            <a href="#" class="kpi-link" data-target="reports">View report →</a>
+          </div>
         </div>
-        <div class="stat card s-yellow">
-          <div class="stat-title">Expenses</div>
-          <div class="stat-value" id="rangeExpenses">UGX 0</div>
+        
+        <div class="kpi-card kpi-expenses">
+          <div class="kpi-header">
+            <span class="kpi-icon">📉</span>
+            <span class="kpi-trend down">↓ 5%</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Monthly Expenses</div>
+            <div class="kpi-value" id="rangeExpenses">UGX 0</div>
+            <div class="kpi-desc">Operational costs</div>
+          </div>
+          <div class="kpi-footer">
+            <a href="#" class="kpi-link" data-target="expenses">Manage →</a>
+          </div>
         </div>
-        <div class="stat card s-blue-light">
-          <div class="stat-title">Available Funds</div>
-          <div class="stat-value" id="availableFunds">UGX 0</div>
+        
+        <div class="kpi-card kpi-funds">
+          <div class="kpi-header">
+            <span class="kpi-icon">🏦</span>
+            <span class="kpi-trend up">↑ 15%</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-label">Available Funds</div>
+            <div class="kpi-value" id="availableFunds">UGX 0</div>
+            <div class="kpi-desc">Current balance</div>
+          </div>
+          <div class="kpi-footer">
+            <a href="#" class="kpi-link" data-target="capital">Manage →</a>
+          </div>
         </div>
       </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin:0 0 10px;">Recent Documents</h3>
-        <ul id="recentSales" class="list"></ul>
-      </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin:0 0 10px;">Alerts</h3>
-        <ul class="list">
-          <li><div>Pending quotes</div><div id="pendingQuotesCount">0</div></li>
-          <li><div>Draft documents</div><div id="draftCount">0</div></li>
-        </ul>
+      
+      <div class="dash-grid">
+        <!-- Recent Sales -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Recent Documents</h3>
+            <button class="btn-icon" id="viewAllSales">
+              <span class="icon">↗</span>
+            </button>
+          </div>
+          <div class="card-body">
+            <ul id="recentSales" class="document-list">
+              <li class="empty-state">No recent sales</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <a href="#" data-target="documents" class="footer-link">View all documents →</a>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Quick Actions</h3>
+          </div>
+          <div class="card-body">
+            <div class="quick-actions-grid">
+              <button class="quick-action" data-target="newSale">
+                <span class="action-icon">➕</span>
+                <span class="action-text">New Sale</span>
+              </button>
+              <button class="quick-action" data-target="quotes">
+                <span class="action-icon">📋</span>
+                <span class="action-text">Create Quote</span>
+              </button>
+              <button class="quick-action" data-target="expenses">
+                <span class="action-icon">💰</span>
+                <span class="action-text">Add Expense</span>
+              </button>
+              <button class="quick-action" data-target="clients">
+                <span class="action-icon">👥</span>
+                <span class="action-text">Add Client</span>
+              </button>
+              <button class="quick-action" id="quickReport">
+                <span class="action-icon">📈</span>
+                <span class="action-text">Quick Report</span>
+              </button>
+              <button class="quick-action" id="exportData">
+                <span class="action-icon">📤</span>
+                <span class="action-text">Export Data</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Alerts -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Alerts & Notifications</h3>
+            <span class="badge badge-danger" id="alertsCount">2</span>
+          </div>
+          <div class="card-body">
+            <ul class="alerts-list">
+              <li class="alert-item alert-danger">
+                <span class="alert-icon">⚠️</span>
+                <div class="alert-content">
+                  <strong>Pending quotes</strong>
+                  <small><span id="pendingQuotesCount">0</span> quotes awaiting approval</small>
+                </div>
+                <button class="btn-icon small" data-target="quotes">
+                  <span class="icon">→</span>
+                </button>
+              </li>
+              <li class="alert-item alert-warning">
+                <span class="alert-icon">📝</span>
+                <div class="alert-content">
+                  <strong>Draft documents</strong>
+                  <small><span id="draftCount">0</span> drafts saved</small>
+                </div>
+                <button class="btn-icon small" data-target="drafts">
+                  <span class="icon">→</span>
+                </button>
+              </li>
+              <li class="alert-item alert-info">
+                <span class="alert-icon">📅</span>
+                <div class="alert-content">
+                  <strong>Monthly report due</strong>
+                  <small>Generate monthly report</small>
+                </div>
+                <button class="btn-icon small" data-target="reports">
+                  <span class="icon">→</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Performance Chart -->
+        <div class="dash-card">
+          <div class="card-header">
+            <h3>Performance This Month</h3>
+            <select class="chart-period" id="chartPeriod">
+              <option value="week">This Week</option>
+              <option value="month" selected>This Month</option>
+              <option value="quarter">This Quarter</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <canvas id="performanceChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <span class="legend-color revenue"></span>
+                <span>Revenue</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color expenses"></span>
+                <span>Expenses</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color profit"></span>
+                <span>Profit</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- DOCUMENTS -->
     <section id="documents" class="panel card hidden">
       <div class="section-header">
-        <h2>Documents</h2>
+        <div>
+          <h2>Documents</h2>
+          <p class="section-subtitle">Manage invoices, receipts, and quotes</p>
+        </div>
         <div class="section-actions">
-          <button id="refreshDocsBtn" class="btn">Refresh</button>
+          <button class="btn btn-primary" data-target="newSale">
+            <span class="btn-icon">➕</span> New Document
+          </button>
+          <button id="refreshDocsBtn" class="btn">
+            <span class="btn-icon">🔄</span> Refresh
+          </button>
         </div>
       </div>
-
-      <div class="form-row">
-        <input id="docSearch" placeholder="Search by customer / notes / document ID">
-        <select id="docTypeFilter">
-          <option value="all">All types</option>
-          <option value="sale">Sales</option>
-          <option value="quote">Quotes</option>
-        </select>
-        <input id="docFrom" type="date">
-        <input id="docTo" type="date">
+      
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input 
+              id="docSearch" 
+              type="search" 
+              placeholder="Search documents..."
+              class="search-input"
+            >
+            <button class="search-clear" id="clearSearch">✕</button>
+          </div>
+          
+          <div class="filter-group">
+            <select id="docTypeFilter" class="filter-select">
+              <option value="all">All Types</option>
+              <option value="invoice">Invoices</option>
+              <option value="receipt">Receipts</option>
+              <option value="quote">Quotes</option>
+            </select>
+            
+            <select id="docStatusFilter" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="paid">Paid</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="partial">Partial</option>
+              <option value="draft">Draft</option>
+            </select>
+          </div>
+          
+          <div class="date-range-picker">
+            <input id="docFrom" type="date" class="date-input" title="From date">
+            <span class="date-separator">to</span>
+            <input id="docTo" type="date" class="date-input" title="To date">
+          </div>
+        </div>
+        
+        <div class="filter-row">
+          <div class="filter-tags" id="activeFilters"></div>
+          <button class="btn btn-sm" id="clearFilters">
+            <span class="btn-icon">🗑️</span> Clear All
+          </button>
+        </div>
       </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <ul id="documentsList" class="list"></ul>
+      
+      <div class="documents-container">
+        <div class="documents-stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Documents</div>
+            <div class="stat-value" id="totalDocsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Value</div>
+            <div class="stat-value" id="totalDocsValue">UGX 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" id="pendingDocsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value" id="monthDocsCount">0</div>
+          </div>
+        </div>
+        
+        <div class="documents-list-container">
+          <div class="list-header">
+            <div class="list-column" style="flex: 2;">Document</div>
+            <div class="list-column">Customer</div>
+            <div class="list-column">Date</div>
+            <div class="list-column">Status</div>
+            <div class="list-column">Amount</div>
+            <div class="list-column">Actions</div>
+          </div>
+          
+          <div id="documentsList" class="documents-list">
+            <div class="empty-state">
+              <div class="empty-icon">📁</div>
+              <h3>No documents found</h3>
+              <p>Create your first document to get started</p>
+              <button class="btn btn-primary" data-target="newSale">
+                <span class="btn-icon">➕</span> Create Document
+              </button>
+            </div>
+          </div>
+          
+          <div class="list-footer">
+            <div class="pagination">
+              <button class="pagination-btn" disabled id="prevPage">
+                <span class="btn-icon">←</span> Previous
+              </button>
+              <span class="pagination-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+              <button class="pagination-btn" id="nextPage">
+                Next <span class="btn-icon">→</span>
+              </button>
+            </div>
+            <div class="page-size">
+              <span>Show:</span>
+              <select id="pageSize" class="page-size-select">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- NEW SALE -->
     <section id="newSale" class="panel card hidden">
       <div class="section-header">
-        <h2>New Sale</h2>
+        <div>
+          <h2>New Sale</h2>
+          <p class="section-subtitle">Create invoice or receipt</p>
+        </div>
         <div class="section-actions">
-          <button id="saveDraftBtn" class="btn">Save Draft</button>
-          <button id="saveAndPrintBtn" class="btn primary">Finalize & Receipt (JPG)</button>
-          <button id="saveAndInvoiceBtn" class="btn">Finalize & Invoice (PDF)</button>
+          <button id="saveDraftBtn" class="btn">
+            <span class="btn-icon">💾</span> Save Draft
+          </button>
+          <button id="previewSaleBtn" class="btn">
+            <span class="btn-icon">👁️</span> Preview
+          </button>
+          <button id="saveAndPrintBtn" class="btn btn-primary">
+            <span class="btn-icon">🖨️</span> Finalize & Receipt
+          </button>
+          <button id="saveAndInvoiceBtn" class="btn btn-success">
+            <span class="btn-icon">📄</span> Finalize & Invoice
+          </button>
         </div>
       </div>
-
-      <div class="form-row">
-        <input id="saleCustomer" placeholder="Customer name (optional)">
-        <input id="saleNotes" placeholder="Notes">
-        <select id="paymentMethod">
-          <option value="cash">Cash</option>
-          <option value="mobile_money">Mobile Money</option>
-          <option value="bank">Bank</option>
-        </select>
-        <select id="paymentStatus">
-          <option value="paid">Paid</option>
-          <option value="unpaid">Unpaid</option>
-          <option value="partial">Partial</option>
-        </select>
+      
+      <div class="sale-container">
+        <!-- Customer & Payment Info -->
+        <div class="sale-card">
+          <h3 class="card-title">Customer & Payment</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="saleCustomer" class="form-label">Customer Name *</label>
+              <div class="input-with-action">
+                <input 
+                  id="saleCustomer" 
+                  type="text" 
+                  placeholder="Customer name or select from list"
+                  class="form-input"
+                  list="customerList"
+                >
+                <button class="btn-icon" id="selectCustomer" title="Select customer">
+                  <span class="icon">👥</span>
+                </button>
+              </div>
+              <datalist id="customerList"></datalist>
+            </div>
+            
+            <div class="form-group">
+              <label for="saleNotes" class="form-label">Notes</label>
+              <textarea 
+                id="saleNotes" 
+                placeholder="Additional notes or terms..."
+                class="form-textarea"
+                rows="2"
+              ></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="paymentMethod" class="form-label">Payment Method</label>
+              <select id="paymentMethod" class="form-select">
+                <option value="cash">Cash</option>
+                <option value="mobile_money">Mobile Money</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="credit">Credit</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="paymentStatus" class="form-label">Payment Status</label>
+              <select id="paymentStatus" class="form-select">
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+                <option value="partial">Partial Payment</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Items List -->
+        <div class="sale-card">
+          <h3 class="card-title">Items</h3>
+          <div id="itemsList" class="items-list">
+            <div class="empty-state">
+              <div class="empty-icon">🛒</div>
+              <h4>No items added</h4>
+              <p>Add items to create your sale</p>
+            </div>
+          </div>
+          
+          <!-- Add Item Form -->
+          <div class="add-item-card">
+            <h4 class="card-subtitle">Add Item</h4>
+            <div class="form-grid compact">
+              <div class="form-group">
+                <label for="productName" class="form-label">Product/Service *</label>
+                <input 
+                  id="productName" 
+                  type="text" 
+                  placeholder="Enter item name"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="qty" class="form-label">Quantity</label>
+                <input 
+                  id="qty" 
+                  type="number" 
+                  min="1" 
+                  value="1"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="unitPrice" class="form-label">Unit Price (UGX) *</label>
+                <input 
+                  id="unitPrice" 
+                  type="text" 
+                  placeholder="0"
+                  inputmode="numeric"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="costPrice" class="form-label">Cost Price (UGX)</label>
+                <input 
+                  id="costPrice" 
+                  type="text" 
+                  placeholder="0"
+                  inputmode="numeric"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label invisible">Add</label>
+                <button id="addItemBtn" class="btn btn-primary">
+                  <span class="btn-icon">➕</span> Add Item
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Adjustments & Totals -->
+        <div class="sale-card">
+          <h3 class="card-title">Adjustments & Totals</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="discount" class="form-label">Discount (UGX)</label>
+              <input 
+                id="discount" 
+                type="text" 
+                placeholder="0"
+                inputmode="numeric"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="tax" class="form-label">Tax/VAT (UGX)</label>
+              <input 
+                id="tax" 
+                type="text" 
+                placeholder="0"
+                inputmode="numeric"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label invisible">Apply</label>
+              <button id="applyAdjustments" class="btn">
+                <span class="btn-icon">✓</span> Apply Adjustments
+              </button>
+            </div>
+          </div>
+          
+          <div class="totals-card">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="saleSubtotal">UGX 0</span>
+            </div>
+            <div class="total-row discount">
+              <span>Discount</span>
+              <span id="saleDiscount">UGX 0</span>
+            </div>
+            <div class="total-row tax">
+              <span>Tax</span>
+              <span id="saleTax">UGX 0</span>
+            </div>
+            <div class="total-row profit">
+              <span>Estimated Profit</span>
+              <span id="saleProfit">UGX 0</span>
+            </div>
+            <div class="total-row grand-total">
+              <span>Total</span>
+              <span id="saleTotal">UGX 0</span>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div id="itemsList" class="items-list"></div>
-
-      <div class="form-row">
-        <input id="productName" placeholder="Product / Service">
-        <input id="qty" type="number" min="1" value="1" />
-        <input id="unitPrice" placeholder="Sale price (UGX)" inputmode="numeric" />
-        <input id="costPrice" placeholder="Cost price (UGX)" inputmode="numeric" />
-        <button id="addItemBtn" class="btn">Add</button>
-      </div>
-
-      <div class="form-row">
-        <input id="discount" placeholder="Discount (UGX) e.g. 5000" inputmode="numeric">
-        <input id="tax" placeholder="Tax/VAT (UGX) e.g. 0" inputmode="numeric">
-        <div></div><div></div>
-      </div>
-
-      <div class="totals card">
-        <div>Subtotal: <span id="saleSubtotal">UGX 0</span></div>
-        <div>Discount: <span id="saleDiscount">UGX 0</span></div>
-        <div>Tax: <span id="saleTax">UGX 0</span></div>
-        <div class="big">Total: <span id="saleTotal">UGX 0</span></div>
+      
+      <!-- Template Selection -->
+      <div class="template-selection">
+        <h3 class="card-title">Document Template</h3>
+        <div class="template-grid">
+          <div class="template-card active" data-template="modern">
+            <div class="template-preview modern"></div>
+            <div class="template-info">
+              <h4>Modern</h4>
+              <p>Clean and professional</p>
+            </div>
+          </div>
+          
+          <div class="template-card" data-template="classic">
+            <div class="template-preview classic"></div>
+            <div class="template-info">
+              <h4>Classic</h4>
+              <p>Traditional design</p>
+            </div>
+          </div>
+          
+          <div class="template-card" data-template="minimal">
+            <div class="template-preview minimal"></div>
+            <div class="template-info">
+              <h4>Minimal</h4>
+              <p>Simple and elegant</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- QUOTES -->
     <section id="quotes" class="panel card hidden">
       <div class="section-header">
-        <h2>Quotes</h2>
+        <div>
+          <h2>Quotes</h2>
+          <p class="section-subtitle">Create and manage quotations</p>
+        </div>
         <div class="section-actions">
-          <button id="newQuoteBtn" class="btn">New Quote</button>
+          <button id="newQuoteBtn" class="btn btn-primary">
+            <span class="btn-icon">➕</span> New Quote
+          </button>
+          <button id="importQuotes" class="btn">
+            <span class="btn-icon">📥</span> Import
+          </button>
         </div>
       </div>
-
-      <div class="form-row">
-        <button class="btn" data-quote-filter="all">All</button>
-        <button class="btn" data-quote-filter="draft">Draft</button>
-        <button class="btn" data-quote-filter="pending">Pending</button>
-        <button class="btn" data-quote-filter="approved">Approved</button>
+      
+      <!-- Quote Editor -->
+      <div id="quoteEditor" class="quote-editor hidden">
+        <div class="editor-header">
+          <h3>Create Quote</h3>
+          <div class="editor-actions">
+            <button id="saveQuoteDraft" class="btn">
+              <span class="btn-icon">💾</span> Save Draft
+            </button>
+            <button id="previewQuote" class="btn">
+              <span class="btn-icon">👁️</span> Preview
+            </button>
+            <button id="sendQuoteBtn" class="btn btn-primary">
+              <span class="btn-icon">📤</span> Send Quote
+            </button>
+            <button id="closeQuoteEditor" class="btn-icon">
+              <span class="icon">✕</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="editor-body">
+          <!-- Quote form similar to sale form -->
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="quoteCustomer" class="form-label">Customer *</label>
+              <input 
+                id="quoteCustomer" 
+                type="text" 
+                placeholder="Customer name"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="quoteNotes" class="form-label">Notes</label>
+              <textarea 
+                id="quoteNotes" 
+                placeholder="Quote terms and conditions..."
+                class="form-textarea"
+                rows="3"
+              ></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="quoteValidUntil" class="form-label">Valid Until</label>
+              <input 
+                id="quoteValidUntil" 
+                type="date"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="quoteCurrency" class="form-label">Currency</label>
+              <select id="quoteCurrency" class="form-select">
+                <option value="UGX">UGX - Ugandan Shilling</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Quote Items -->
+          <div id="quoteItemsList" class="items-list"></div>
+          
+          <!-- Add Quote Item -->
+          <div class="add-item-card">
+            <h4 class="card-subtitle">Add Quote Item</h4>
+            <div class="form-grid compact">
+              <div class="form-group">
+                <input 
+                  id="qProductName" 
+                  type="text" 
+                  placeholder="Item description"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <input 
+                  id="qQty" 
+                  type="number" 
+                  min="1" 
+                  value="1"
+                  class="form-input"
+                  placeholder="Qty"
+                >
+              </div>
+              
+              <div class="form-group">
+                <input 
+                  id="qUnitPrice" 
+                  type="text" 
+                  placeholder="Unit price"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <input 
+                  id="qCostPrice" 
+                  type="text" 
+                  placeholder="Cost price"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <button id="addQuoteItemBtn" class="btn btn-primary">
+                  <span class="btn-icon">➕</span> Add
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quote Total -->
+          <div class="quote-total">
+            <div class="total-card">
+              <div class="total-row">
+                <span>Quote Total</span>
+                <span id="quoteTotal">UGX 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div id="quoteEditor" class="card hidden" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin-top:0;">Create Quote</h3>
-
-        <div class="form-row">
-          <input id="quoteCustomer" placeholder="Customer name">
-          <input id="quoteNotes" placeholder="Notes">
-          <input id="quoteValidUntil" type="date">
-          <select id="quoteCurrency">
-            <option value="UGX">UGX</option>
-          </select>
-        </div>
-
-        <div id="quoteItemsList" class="items-list"></div>
-
-        <div class="form-row">
-          <input id="qProductName" placeholder="Item / Service">
-          <input id="qQty" type="number" min="1" value="1" />
-          <input id="qUnitPrice" placeholder="Sale price (UGX)">
-          <input id="qCostPrice" placeholder="Cost price (UGX)">
-          <button id="addQuoteItemBtn" class="btn">Add</button>
-        </div>
-
-        <div class="totals card">
-          <div>Quote Total: <span id="quoteTotal">UGX 0</span></div>
-        </div>
-
-        <div class="section-actions" style="padding:0 0 6px;">
-          <button id="saveQuoteDraft" class="btn">Save Quote Draft</button>
-          <button id="sendQuoteBtn" class="btn primary">Save & Send Quote</button>
-        </div>
+      
+      <!-- Quote Filters -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-quote-filter="all">All Quotes</button>
+        <button class="filter-tab" data-quote-filter="draft">Drafts</button>
+        <button class="filter-tab" data-quote-filter="pending">Pending</button>
+        <button class="filter-tab" data-quote-filter="approved">Approved</button>
+        <button class="filter-tab" data-quote-filter="expired">Expired</button>
+        <button class="filter-tab" data-quote-filter="converted">Converted</button>
       </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin:0 0 10px;">Existing Quotes</h3>
-        <ul id="quotesList" class="list"></ul>
+      
+      <!-- Quotes List -->
+      <div class="quotes-container">
+        <div id="quotesList" class="quotes-list">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No quotes found</h3>
+            <p>Create your first quote to get started</p>
+            <button id="newQuoteEmptyBtn" class="btn btn-primary">
+              <span class="btn-icon">➕</span> Create Quote
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- EXPENSES -->
     <section id="expenses" class="panel card hidden">
       <div class="section-header">
-        <h2>Expenses</h2>
+        <div>
+          <h2>Expenses</h2>
+          <p class="section-subtitle">Track and manage business expenses</p>
+        </div>
+        <div class="section-actions">
+          <button id="addExpenseBtn" class="btn btn-primary">
+            <span class="btn-icon">➕</span> Add Expense
+          </button>
+          <button id="exportExpenses" class="btn">
+            <span class="btn-icon">📤</span> Export
+          </button>
+        </div>
       </div>
-
-      <div class="form-row">
-        <input id="expVendor" placeholder="Vendor">
-        <input id="expAmount" placeholder="Amount (UGX)" inputmode="numeric" />
-        <select id="expCategory">
-          <option value="general">General</option>
-          <option value="rent">Rent</option>
-          <option value="transport">Transport</option>
-          <option value="internet">Internet</option>
-          <option value="supplies">Supplies</option>
-          <option value="salary">Salary</option>
-        </select>
-        <input id="expNotes" placeholder="Notes" />
+      
+      <!-- Expense Form -->
+      <div class="expense-form-card">
+        <h3 class="card-title">Add New Expense</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="expVendor" class="form-label">Vendor *</label>
+            <input 
+              id="expVendor" 
+              type="text" 
+              placeholder="Vendor name"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="expAmount" class="form-label">Amount (UGX) *</label>
+            <input 
+              id="expAmount" 
+              type="text" 
+              placeholder="0"
+              inputmode="numeric"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="expCategory" class="form-label">Category</label>
+            <select id="expCategory" class="form-select">
+              <option value="general">General</option>
+              <option value="rent">Rent</option>
+              <option value="transport">Transport</option>
+              <option value="internet">Internet</option>
+              <option value="supplies">Supplies</option>
+              <option value="salary">Salary</option>
+              <option value="marketing">Marketing</option>
+              <option value="equipment">Equipment</option>
+              <option value="utilities">Utilities</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="expDate" class="form-label">Date</label>
+            <input 
+              id="expDate" 
+              type="date"
+              class="form-input"
+              value="<?php echo date('Y-m-d'); ?>"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="expNotes" class="form-label">Notes</label>
+            <input 
+              id="expNotes" 
+              type="text" 
+              placeholder="Expense description"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="expReceiptFile" class="form-label">Receipt</label>
+            <div class="file-upload">
+              <label for="expReceiptFile" class="file-upload-label">
+                <span class="file-upload-icon">📎</span>
+                <span class="file-upload-text">Upload Receipt</span>
+              </label>
+              <input 
+                id="expReceiptFile" 
+                type="file" 
+                accept="image/*,.pdf"
+                class="file-upload-input"
+              >
+              <div class="file-name" id="fileName">No file chosen</div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="form-row">
-        <input id="expReceiptFile" type="file" accept="image/*">
-        <button id="addExpenseBtn" class="btn primary">Add Expense</button>
-        <div></div><div></div>
+      
+      <!-- Expenses List -->
+      <div class="expenses-container">
+        <div class="expenses-header">
+          <h3>Recent Expenses</h3>
+          <div class="expenses-filter">
+            <select id="expensesFilter" class="filter-select">
+              <option value="all">All Categories</option>
+              <option value="general">General</option>
+              <option value="rent">Rent</option>
+              <option value="transport">Transport</option>
+              <option value="internet">Internet</option>
+              <option value="supplies">Supplies</option>
+              <option value="salary">Salary</option>
+            </select>
+            <input 
+              id="expensesSearch" 
+              type="search" 
+              placeholder="Search expenses..."
+              class="search-input"
+            >
+          </div>
+        </div>
+        
+        <div class="expenses-stats">
+          <div class="stat-card">
+            <div class="stat-label">This Month</div>
+            <div class="stat-value" id="monthExpenses">UGX 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Last Month</div>
+            <div class="stat-value" id="lastMonthExpenses">UGX 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">This Year</div>
+            <div class="stat-value" id="yearExpenses">UGX 0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Average/Month</div>
+            <div class="stat-value" id="avgExpenses">UGX 0</div>
+          </div>
+        </div>
+        
+        <ul id="expensesList" class="expenses-list">
+          <li class="empty-state">
+            <div class="empty-icon">💰</div>
+            <h4>No expenses recorded</h4>
+            <p>Add your first expense to start tracking</p>
+          </li>
+        </ul>
       </div>
-
-      <ul id="expensesList" class="list" style="padding:0 16px 16px;"></ul>
     </section>
 
     <!-- CAPITAL -->
     <section id="capital" class="panel card hidden">
       <div class="section-header">
-        <h2>Capital</h2>
+        <div>
+          <h2>Capital Management</h2>
+          <p class="section-subtitle">Track capital injections and distributions</p>
+        </div>
+        <div class="section-actions">
+          <button id="addCapitalBtn" class="btn btn-primary">
+            <span class="btn-icon">➕</span> Add Entry
+          </button>
+          <button id="capitalReport" class="btn">
+            <span class="btn-icon">📈</span> Report
+          </button>
+        </div>
       </div>
-
-      <div class="form-row">
-        <select id="capType">
-          <option value="injection">Injection (Add)</option>
-          <option value="distribution">Distribution (Withdraw)</option>
-        </select>
-        <input id="capAmount" placeholder="Amount (UGX)" inputmode="numeric" />
-        <input id="capNotes" placeholder="Notes" />
-        <button id="addCapitalBtn" class="btn primary">Add</button>
+      
+      <!-- Capital Form -->
+      <div class="capital-form-card">
+        <h3 class="card-title">Add Capital Entry</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="capType" class="form-label">Type</label>
+            <select id="capType" class="form-select">
+              <option value="injection">Capital Injection (Add)</option>
+              <option value="distribution">Capital Distribution (Withdraw)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="capAmount" class="form-label">Amount (UGX) *</label>
+            <input 
+              id="capAmount" 
+              type="text" 
+              placeholder="0"
+              inputmode="numeric"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="capDate" class="form-label">Date</label>
+            <input 
+              id="capDate" 
+              type="date"
+              class="form-input"
+              value="<?php echo date('Y-m-d'); ?>"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="capNotes" class="form-label">Notes</label>
+            <textarea 
+              id="capNotes" 
+              placeholder="Purpose of capital movement..."
+              class="form-textarea"
+              rows="2"
+            ></textarea>
+          </div>
+        </div>
       </div>
-
-      <ul id="capitalList" class="list" style="padding:0 16px 16px;"></ul>
+      
+      <!-- Capital Summary -->
+      <div class="capital-summary">
+        <div class="summary-card injection">
+          <div class="summary-icon">⬆️</div>
+          <div class="summary-content">
+            <div class="summary-label">Total Capital Injected</div>
+            <div class="summary-value" id="totalInjected">UGX 0</div>
+          </div>
+        </div>
+        
+        <div class="summary-card distribution">
+          <div class="summary-icon">⬇️</div>
+          <div class="summary-content">
+            <div class="summary-label">Total Capital Distributed</div>
+            <div class="summary-value" id="totalDistributed">UGX 0</div>
+          </div>
+        </div>
+        
+        <div class="summary-card balance">
+          <div class="summary-icon">⚖️</div>
+          <div class="summary-content">
+            <div class="summary-label">Capital Balance</div>
+            <div class="summary-value" id="capitalBalance">UGX 0</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Capital List -->
+      <div class="capital-container">
+        <div class="capital-header">
+          <h3>Capital History</h3>
+          <div class="capital-filter">
+            <select id="capitalFilter" class="filter-select">
+              <option value="all">All Types</option>
+              <option value="injection">Injections Only</option>
+              <option value="distribution">Distributions Only</option>
+            </select>
+          </div>
+        </div>
+        
+        <ul id="capitalList" class="capital-list">
+          <li class="empty-state">
+            <div class="empty-icon">🏦</div>
+            <h4>No capital entries</h4>
+            <p>Add your first capital entry</p>
+          </li>
+        </ul>
+      </div>
     </section>
 
     <!-- CLIENTS -->
     <section id="clients" class="panel card hidden">
       <div class="section-header">
-        <h2>Clients</h2>
-      </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin-top:0;">Add Client</h3>
-        <div class="form-row">
-          <input id="clientName" placeholder="Client name">
-          <input id="clientPhone" placeholder="Phone">
-          <input id="clientEmail" placeholder="Email">
-          <input id="clientLocation" placeholder="Location">
+        <div>
+          <h2>Clients</h2>
+          <p class="section-subtitle">Manage client relationships</p>
         </div>
         <div class="section-actions">
-          <button id="addClientBtn" class="btn primary">Add Client</button>
+          <button id="addClientBtn" class="btn btn-primary">
+            <span class="btn-icon">➕</span> Add Client
+          </button>
+          <button id="importClients" class="btn">
+            <span class="btn-icon">📥</span> Import
+          </button>
         </div>
       </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin-top:0;">Proposed</h3>
-        <div class="form-row">
-          <input id="propName" placeholder="Proposed client name">
-          <input id="propContact" placeholder="Contact">
-          <button id="addProposedBtn" class="btn">Add Proposed</button>
-          <div></div>
-        </div>
-        <ul id="proposedList" class="list"></ul>
-      </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin-top:0;">Clients List</h3>
-        <ul id="clientsList" class="list"></ul>
-      </div>
-
-      <div id="clientDrawer" class="card hidden" style="margin:0 16px 16px; padding:16px;">
-        <div style="display:flex; justify-content:space-between; gap:10px;">
-          <div>
-            <div style="font-weight:1000; font-size:16px;" id="clientDrawerName">Client</div>
-            <div style="color:rgba(234,242,255,.72); font-size:12px;" id="clientDrawerMeta"></div>
+      
+      <!-- Add Client Form -->
+      <div class="client-form-card">
+        <h3 class="card-title">Add New Client</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="clientName" class="form-label">Client Name *</label>
+            <input 
+              id="clientName" 
+              type="text" 
+              placeholder="Full name or company"
+              class="form-input"
+            >
           </div>
-          <button class="btn" id="closeClientDrawer">Close</button>
+          
+          <div class="form-group">
+            <label for="clientPhone" class="form-label">Phone</label>
+            <input 
+              id="clientPhone" 
+              type="tel" 
+              placeholder="Phone number"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="clientEmail" class="form-label">Email</label>
+            <input 
+              id="clientEmail" 
+              type="email" 
+              placeholder="Email address"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="clientLocation" class="form-label">Location</label>
+            <input 
+              id="clientLocation" 
+              type="text" 
+              placeholder="City, address"
+              class="form-input"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label for="clientType" class="form-label">Client Type</label>
+            <select id="clientType" class="form-select">
+              <option value="individual">Individual</option>
+              <option value="business">Business</option>
+              <option value="government">Government</option>
+              <option value="organization">Organization</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="clientNotes" class="form-label">Notes</label>
+            <textarea 
+              id="clientNotes" 
+              placeholder="Additional notes..."
+              class="form-textarea"
+              rows="2"
+            ></textarea>
+          </div>
         </div>
-        <div style="margin-top:12px; font-weight:900;">Client Documents</div>
-        <ul id="clientDocsList" class="list" style="margin-top:10px;"></ul>
+      </div>
+      
+      <!-- Client Stats -->
+      <div class="client-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Clients</div>
+          <div class="stat-value" id="totalClients">0</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Active Clients</div>
+          <div class="stat-value" id="activeClients">0</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value" id="clientsRevenue">UGX 0</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Avg. per Client</div>
+          <div class="stat-value" id="avgClientValue">UGX 0</div>
+        </div>
+      </div>
+      
+      <!-- Clients List -->
+      <div class="clients-container">
+        <div class="clients-header">
+          <h3>Client Directory</h3>
+          <div class="clients-search">
+            <div class="search-box">
+              <span class="search-icon">🔍</span>
+              <input 
+                id="clientsSearch" 
+                type="search" 
+                placeholder="Search clients..."
+                class="search-input"
+              >
+            </div>
+            <select id="clientsFilter" class="filter-select">
+              <option value="all">All Clients</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="business">Business</option>
+              <option value="individual">Individual</option>
+            </select>
+          </div>
+        </div>
+        
+        <ul id="clientsList" class="clients-list">
+          <li class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h4>No clients found</h4>
+            <p>Add your first client to get started</p>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Proposed Clients -->
+      <div class="proposed-clients-card">
+        <div class="card-header">
+          <h3>Prospective Clients</h3>
+          <button id="addProposedBtn" class="btn btn-sm">
+            <span class="btn-icon">➕</span> Add
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="form-row compact">
+            <input 
+              id="propName" 
+              type="text" 
+              placeholder="Proposed client name"
+              class="form-input"
+            >
+            <input 
+              id="propContact" 
+              type="text" 
+              placeholder="Contact info"
+              class="form-input"
+            >
+          </div>
+          <ul id="proposedList" class="proposed-list">
+            <li class="empty-state small">
+              <span class="empty-icon">💡</span>
+              <span>No proposed clients</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Client Details Drawer -->
+      <div id="clientDrawer" class="client-drawer hidden">
+        <div class="drawer-header">
+          <div class="client-header-info">
+            <div class="client-avatar">
+              <span class="avatar-text" id="clientAvatar">C</span>
+            </div>
+            <div>
+              <div class="client-drawer-name" id="clientDrawerName">Client Name</div>
+              <div class="client-drawer-meta" id="clientDrawerMeta">
+                <span class="meta-item">📞</span>
+                <span class="meta-item">📧</span>
+                <span class="meta-item">📍</span>
+              </div>
+            </div>
+          </div>
+          <button class="drawer-close" id="closeClientDrawer">
+            <span class="icon">✕</span>
+          </button>
+        </div>
+        
+        <div class="drawer-body">
+          <div class="client-stats-mini">
+            <div class="mini-stat">
+              <div class="mini-label">Total Spent</div>
+              <div class="mini-value" id="clientTotalSpent">UGX 0</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-label">Documents</div>
+              <div class="mini-value" id="clientDocCount">0</div>
+            </div>
+            <div class="mini-stat">
+              <div class="mini-label">Last Purchase</div>
+              <div class="mini-value" id="clientLastPurchase">Never</div>
+            </div>
+          </div>
+          
+          <div class="drawer-section">
+            <h4>Contact Information</h4>
+            <div class="contact-info">
+              <div class="contact-item" id="clientDrawerPhone">
+                <span class="contact-icon">📞</span>
+                <span class="contact-text">-</span>
+              </div>
+              <div class="contact-item" id="clientDrawerEmail">
+                <span class="contact-icon">📧</span>
+                <span class="contact-text">-</span>
+              </div>
+              <div class="contact-item" id="clientDrawerLocation">
+                <span class="contact-icon">📍</span>
+                <span class="contact-text">-</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="drawer-section">
+            <h4>Recent Documents</h4>
+            <ul id="clientDocsList" class="client-docs-list">
+              <li class="empty-state small">
+                <span>No documents found</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="drawer-actions">
+            <button class="btn" id="editClientBtn">
+              <span class="btn-icon">✏️</span> Edit Client
+            </button>
+            <button class="btn btn-primary" id="newSaleForClient">
+              <span class="btn-icon">➕</span> New Sale
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- DRAFTS -->
     <section id="drafts" class="panel card hidden">
       <div class="section-header">
-        <h2>Drafts</h2>
+        <div>
+          <h2>Drafts</h2>
+          <p class="section-subtitle">Continue working on saved drafts</p>
+        </div>
+        <div class="section-actions">
+          <button id="clearAllDrafts" class="btn">
+            <span class="btn-icon">🗑️</span> Clear All
+          </button>
+        </div>
       </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <ul id="draftsList" class="list"></ul>
+      
+      <div class="drafts-container">
+        <div class="drafts-stats">
+          <div class="stat-card">
+            <div class="stat-label">Total Drafts</div>
+            <div class="stat-value" id="draftsTotalCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Sales Drafts</div>
+            <div class="stat-value" id="salesDraftsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Quote Drafts</div>
+            <div class="stat-value" id="quoteDraftsCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Oldest Draft</div>
+            <div class="stat-value" id="oldestDraftAge">0 days</div>
+          </div>
+        </div>
+        
+        <div class="drafts-list-container">
+          <div class="drafts-filter">
+            <button class="filter-btn active" data-draft-type="all">All Drafts</button>
+            <button class="filter-btn" data-draft-type="sale">Sales</button>
+            <button class="filter-btn" data-draft-type="quote">Quotes</button>
+            <button class="filter-btn" data-draft-type="expense">Expenses</button>
+          </div>
+          
+          <div id="draftsList" class="drafts-list">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <h3>No drafts saved</h3>
+              <p>Your drafts will appear here when you save them</p>
+              <button class="btn btn-primary" data-target="newSale">
+                <span class="btn-icon">➕</span> Create New
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- REPORTS -->
     <section id="reports" class="panel card hidden">
       <div class="section-header">
-        <h2>Reports</h2>
+        <div>
+          <h2>Reports</h2>
+          <p class="section-subtitle">Generate business insights and analytics</p>
+        </div>
         <div class="section-actions">
-          <button id="exportReportPDF" class="btn">Download Report (PDF)</button>
-          <button id="exportReportCSV" class="btn">Download Report (CSV)</button>
+          <button id="exportReportPDF" class="btn">
+            <span class="btn-icon">📄</span> Export PDF
+          </button>
+          <button id="exportReportCSV" class="btn">
+            <span class="btn-icon">📊</span> Export CSV
+          </button>
         </div>
       </div>
-
-      <div class="form-row">
-        <select id="reportType">
-          <option value="summary">Summary (Profit & Loss)</option>
-          <option value="sales">Sales Report</option>
-          <option value="expenses">Expenses Report</option>
-          <option value="capital">Capital Statement</option>
-        </select>
-        <input id="reportFrom" type="date">
-        <input id="reportTo" type="date">
-        <button id="runReport" class="btn primary">Run Report</button>
+      
+      <!-- Report Generator -->
+      <div class="report-generator">
+        <div class="report-card">
+          <h3 class="card-title">Generate Report</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="reportType" class="form-label">Report Type</label>
+              <select id="reportType" class="form-select">
+                <option value="summary">Summary (Profit & Loss)</option>
+                <option value="sales">Sales Report</option>
+                <option value="expenses">Expenses Report</option>
+                <option value="capital">Capital Statement</option>
+                <option value="client">Client Analysis</option>
+                <option value="performance">Performance Dashboard</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="reportPeriod" class="form-label">Period</label>
+              <select id="reportPeriod" class="form-select">
+                <option value="custom">Custom Range</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">This Week</option>
+                <option value="last_week">Last Week</option>
+                <option value="this_month" selected>This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="this_quarter">This Quarter</option>
+                <option value="last_quarter">Last Quarter</option>
+                <option value="this_year">This Year</option>
+                <option value="last_year">Last Year</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="reportFrom" class="form-label">From Date</label>
+              <input 
+                id="reportFrom" 
+                type="date"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="reportTo" class="form-label">To Date</label>
+              <input 
+                id="reportTo" 
+                type="date"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label invisible">Generate</label>
+              <button id="runReport" class="btn btn-primary">
+                <span class="btn-icon">🚀</span> Generate Report
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Report Preview -->
+        <div id="reportResult" class="report-preview">
+          <div class="preview-placeholder">
+            <div class="placeholder-icon">📈</div>
+            <h3>Report Preview</h3>
+            <p>Select options and generate a report to see preview here</p>
+          </div>
+        </div>
       </div>
-
-      <div id="reportResult" class="card" style="margin:0 16px 16px; padding:16px;"></div>
+      
+      <!-- Saved Reports -->
+      <div class="saved-reports">
+        <h3>Saved Reports</h3>
+        <div class="reports-grid">
+          <div class="report-card saved">
+            <div class="report-header">
+              <span class="report-icon">📊</span>
+              <span class="report-badge">Monthly</span>
+            </div>
+            <div class="report-body">
+              <h4>Monthly Summary</h4>
+              <p>Last updated: Today</p>
+            </div>
+            <div class="report-actions">
+              <button class="btn-icon" title="View">
+                <span class="icon">👁️</span>
+              </button>
+              <button class="btn-icon" title="Download">
+                <span class="icon">📥</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- More saved reports would appear here -->
+        </div>
+      </div>
     </section>
 
     <!-- SETTINGS -->
     <section id="settings" class="panel card hidden">
       <div class="section-header">
-        <h2>Settings</h2>
-      </div>
-
-      <div class="card" style="margin:0 16px 16px; padding:16px;">
-        <h3 style="margin-top:0;">Company</h3>
-        <div class="form-row">
-          <input id="setCompanyName" placeholder="Company name" value="DEO DIGITAL SOLUTIONS">
-          <input id="setCompanyEmail" placeholder="Company email" value="deoug45@gmail.com">
-          <input id="setCompanyWebsite" placeholder="Website" value="www.deodigital.com">
-          <input id="setCompanyPhone" placeholder="Phone" value="0762886186">
+        <div>
+          <h2>Settings</h2>
+          <p class="section-subtitle">Configure your system preferences</p>
         </div>
         <div class="section-actions">
-          <button id="saveSettingsBtn" class="btn primary">Save Settings</button>
+          <button id="saveAllSettings" class="btn btn-primary">
+            <span class="btn-icon">💾</span> Save All Changes
+          </button>
+        </div>
+      </div>
+      
+      <div class="settings-container">
+        <!-- Navigation -->
+        <div class="settings-nav">
+          <button class="settings-nav-btn active" data-settings-tab="company">Company</button>
+          <button class="settings-nav-btn" data-settings-tab="documents">Documents</button>
+          <button class="settings-nav-btn" data-settings-tab="tax">Tax & Rates</button>
+          <button class="settings-nav-btn" data-settings-tab="users">Users</button>
+          <button class="settings-nav-btn" data-settings-tab="data">Data</button>
+          <button class="settings-nav-btn" data-settings-tab="appearance">Appearance</button>
+          <button class="settings-nav-btn" data-settings-tab="notifications">Notifications</button>
+          <button class="settings-nav-btn" data-settings-tab="advanced">Advanced</button>
+        </div>
+        
+        <!-- Content -->
+        <div class="settings-content">
+          <!-- Company Info -->
+          <div class="settings-tab active" id="companyTab">
+            <h3>Company Information</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="companyName" class="form-label">Company Name *</label>
+                <input 
+                  id="companyName" 
+                  type="text" 
+                  value="DEO DIGITAL SOLUTIONS"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="companyEmail" class="form-label">Email</label>
+                <input 
+                  id="companyEmail" 
+                  type="email" 
+                  value="deoug45@gmail.com"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="companyPhone" class="form-label">Phone</label>
+                <input 
+                  id="companyPhone" 
+                  type="tel" 
+                  value="0762886186"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="companyWebsite" class="form-label">Website</label>
+                <input 
+                  id="companyWebsite" 
+                  type="url" 
+                  value="https://www.deodigital.com"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="companyAddress" class="form-label">Address</label>
+                <textarea 
+                  id="companyAddress" 
+                  class="form-textarea"
+                  rows="3"
+                  placeholder="Business address"
+                ></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="companyTaxId" class="form-label">Tax ID</label>
+                <input 
+                  id="companyTaxId" 
+                  type="text" 
+                  placeholder="Tax identification number"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="currency" class="form-label">Currency</label>
+                <select id="currency" class="form-select">
+                  <option value="UGX" selected>UGX - Ugandan Shilling</option>
+                  <option value="USD">USD - US Dollar</option>
+                  <option value="EUR">EUR - Euro</option>
+                  <option value="GBP">GBP - British Pound</option>
+                  <option value="KES">KES - Kenyan Shilling</option>
+                  <option value="TZS">TZS - Tanzanian Shilling</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="companyLogo" class="form-label">Company Logo</label>
+                <div class="logo-upload">
+                  <div class="logo-preview">
+                    <img src="logo.png" alt="Current logo" id="logoPreview">
+                  </div>
+                  <input 
+                    id="companyLogo" 
+                    type="file" 
+                    accept="image/*"
+                    class="logo-upload-input"
+                  >
+                  <label for="companyLogo" class="btn">
+                    <span class="btn-icon">🖼️</span> Change Logo
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="settings-actions">
+              <button id="saveCompanyInfo" class="btn btn-primary">
+                <span class="btn-icon">💾</span> Save Company Info
+              </button>
+            </div>
+          </div>
+          
+          <!-- Document Settings -->
+          <div class="settings-tab" id="documentsTab">
+            <h3>Document Settings</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="invoicePrefix" class="form-label">Invoice Prefix</label>
+                <input 
+                  id="invoicePrefix" 
+                  type="text" 
+                  value="INV"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="receiptPrefix" class="form-label">Receipt Prefix</label>
+                <input 
+                  id="receiptPrefix" 
+                  type="text" 
+                  value="RC"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="quotePrefix" class="form-label">Quote Prefix</label>
+                <input 
+                  id="quotePrefix" 
+                  type="text" 
+                  value="QT"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="nextInvoiceNumber" class="form-label">Next Invoice Number</label>
+                <input 
+                  id="nextInvoiceNumber" 
+                  type="number" 
+                  value="1001"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="defaultPaymentTerms" class="form-label">Default Payment Terms</label>
+                <select id="defaultPaymentTerms" class="form-select">
+                  <option value="0">Due on receipt</option>
+                  <option value="7" selected>Net 7 days</option>
+                  <option value="14">Net 14 days</option>
+                  <option value="30">Net 30 days</option>
+                  <option value="60">Net 60 days</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="defaultNotes" class="form-label">Default Notes</label>
+                <textarea 
+                  id="defaultNotes" 
+                  class="form-textarea"
+                  rows="4"
+                  placeholder="Default terms and conditions..."
+                >Thank you for your business. Please make payment within 7 days.</textarea>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Tax Settings -->
+          <div class="settings-tab" id="taxTab">
+            <h3>Tax & Rates</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="taxRate" class="form-label">Default Tax Rate (%)</label>
+                <input 
+                  id="taxRate" 
+                  type="number" 
+                  min="0" 
+                  max="100" 
+                  step="0.1"
+                  value="18"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="taxName" class="form-label">Tax Name</label>
+                <input 
+                  id="taxName" 
+                  type="text" 
+                  value="VAT"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Tax Number Display</label>
+                <div class="checkbox-group">
+                  <label class="checkbox">
+                    <input type="checkbox" id="showTaxNumber" checked>
+                    <span class="checkmark"></span>
+                    Show tax number on invoices
+                  </label>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="defaultDiscount" class="form-label">Default Discount (%)</label>
+                <input 
+                  id="defaultDiscount" 
+                  type="number" 
+                  min="0" 
+                  max="100" 
+                  step="1"
+                  value="0"
+                  class="form-input"
+                >
+              </div>
+            </div>
+            
+            <div class="settings-actions">
+              <button id="saveTaxSettings" class="btn btn-primary">
+                <span class="btn-icon">💾</span> Save Tax Settings
+              </button>
+            </div>
+          </div>
+          
+          <!-- User Management -->
+          <div class="settings-tab" id="usersTab">
+            <h3>User Management</h3>
+            <div class="user-management">
+              <div class="current-users">
+                <h4>Current Users</h4>
+                <div class="users-list">
+                  <div class="user-item admin">
+                    <div class="user-avatar">
+                      <span class="avatar-text">A</span>
+                    </div>
+                    <div class="user-info">
+                      <div class="user-name">Admin User</div>
+                      <div class="user-email">admin@deodigital.com</div>
+                    </div>
+                    <div class="user-role">
+                      <span class="role-badge">Admin</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="add-user-form">
+                <h4>Add New User</h4>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="newUserEmail" class="form-label">Email Address</label>
+                    <input 
+                      id="newUserEmail" 
+                      type="email" 
+                      placeholder="user@example.com"
+                      class="form-input"
+                    >
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="newUserPassword" class="form-label">Password</label>
+                    <input 
+                      id="newUserPassword" 
+                      type="password" 
+                      placeholder="••••••••"
+                      class="form-input"
+                    >
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="newUserRole" class="form-label">Role</label>
+                    <select id="newUserRole" class="form-select">
+                      <option value="admin">Administrator</option>
+                      <option value="manager">Manager</option>
+                      <option value="staff">Staff</option>
+                      <option value="viewer">Viewer</option>
+                    </select>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="form-label invisible">Add</label>
+                    <button id="addUserBtn" class="btn btn-primary">
+                      <span class="btn-icon">➕</span> Add User
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Data Management -->
+          <div class="settings-tab" id="dataTab">
+            <h3>Data Management</h3>
+            <div class="data-actions">
+              <div class="action-card">
+                <div class="action-icon">📤</div>
+                <div class="action-content">
+                  <h4>Export All Data</h4>
+                  <p>Download complete database backup</p>
+                </div>
+                <button id="exportAllData" class="btn">
+                  <span class="btn-icon">📥</span> Export
+                </button>
+              </div>
+              
+              <div class="action-card">
+                <div class="action-icon">☁️</div>
+                <div class="action-content">
+                  <h4>Backup to Cloud</h4>
+                  <p>Automated daily backups</p>
+                </div>
+                <button id="backupData" class="btn">
+                  <span class="btn-icon">🔄</span> Backup Now
+                </button>
+              </div>
+              
+              <div class="action-card danger">
+                <div class="action-icon">🗑️</div>
+                <div class="action-content">
+                  <h4>Clear Cache</h4>
+                  <p>Clear temporary files and cache</p>
+                </div>
+                <button id="clearCache" class="btn btn-danger">
+                  <span class="btn-icon">🗑️</span> Clear
+                </button>
+              </div>
+              
+              <div class="action-card danger">
+                <div class="action-icon">⚠️</div>
+                <div class="action-content">
+                  <h4>Reset System</h4>
+                  <p>Reset to factory settings (Danger)</p>
+                </div>
+                <button id="resetSystem" class="btn btn-danger" disabled>
+                  <span class="btn-icon">⚠️</span> Reset
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Appearance -->
+          <div class="settings-tab" id="appearanceTab">
+            <h3>Appearance</h3>
+            <div class="appearance-options">
+              <div class="option-group">
+                <h4>Theme</h4>
+                <div class="theme-selector">
+                  <div class="theme-option active" data-theme="light">
+                    <div class="theme-preview light"></div>
+                    <span class="theme-name">Light</span>
+                  </div>
+                  <div class="theme-option" data-theme="dark">
+                    <div class="theme-preview dark"></div>
+                    <span class="theme-name">Dark</span>
+                  </div>
+                  <div class="theme-option" data-theme="auto">
+                    <div class="theme-preview auto"></div>
+                    <span class="theme-name">Auto</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="option-group">
+                <h4>Accent Color</h4>
+                <div class="color-selector">
+                  <div class="color-option active" data-color="blue">
+                    <div class="color-preview blue"></div>
+                  </div>
+                  <div class="color-option" data-color="green">
+                    <div class="color-preview green"></div>
+                  </div>
+                  <div class="color-option" data-color="purple">
+                    <div class="color-preview purple"></div>
+                  </div>
+                  <div class="color-option" data-color="orange">
+                    <div class="color-preview orange"></div>
+                  </div>
+                  <div class="color-option" data-color="red">
+                    <div class="color-preview red"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="option-group">
+                <h4>Interface</h4>
+                <div class="checkbox-group">
+                  <label class="checkbox">
+                    <input type="checkbox" id="compactMode" checked>
+                    <span class="checkmark"></span>
+                    Compact mode
+                  </label>
+                  <label class="checkbox">
+                    <input type="checkbox" id="animations" checked>
+                    <span class="checkmark"></span>
+                    Animations
+                  </label>
+                  <label class="checkbox">
+                    <input type="checkbox" id="hapticFeedback">
+                    <span class="checkmark"></span>
+                    Haptic feedback (mobile)
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Bottom nav (mobile) — all sections -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav" aria-label="Bottom navigation">
-    <button data-target="dashboard" class="nav-btn active">Home</button>
-    <button data-target="documents" class="nav-btn">Docs</button>
-    <button data-target="newSale" class="nav-btn">Sales</button>
-    <button data-target="quotes" class="nav-btn">Quotes</button>
-    <button data-target="expenses" class="nav-btn">Expenses</button>
-    <button data-target="capital" class="nav-btn">Capital</button>
-    <button data-target="clients" class="nav-btn">Clients</button>
-    <button data-target="drafts" class="nav-btn">Drafts</button>
-    <button data-target="reports" class="nav-btn">Reports</button>
-    <button data-target="settings" class="nav-btn">Settings</button>
+    <button data-target="dashboard" class="nav-btn active">
+      <span class="nav-icon">📊</span>
+      <span class="nav-text">Home</span>
+    </button>
+    
+    <button data-target="documents" class="nav-btn">
+      <span class="nav-icon">📁</span>
+      <span class="nav-text">Docs</span>
+    </button>
+    
+    <button data-target="newSale" class="nav-btn">
+      <span class="nav-icon">➕</span>
+      <span class="nav-text">Sales</span>
+    </button>
+    
+    <button data-target="quotes" class="nav-btn">
+      <span class="nav-icon">📋</span>
+      <span class="nav-text">Quotes</span>
+      <span class="nav-badge" id="pendingQuotesCountMobile">0</span>
+    </button>
+    
+    <button data-target="expenses" class="nav-btn">
+      <span class="nav-icon">💰</span>
+      <span class="nav-text">Expenses</span>
+    </button>
+    
+    <button data-target="capital" class="nav-btn">
+      <span class="nav-icon">🏦</span>
+      <span class="nav-text">Capital</span>
+    </button>
+    
+    <button data-target="clients" class="nav-btn">
+      <span class="nav-icon">👥</span>
+      <span class="nav-text">Clients</span>
+    </button>
+    
+    <button data-target="drafts" class="nav-btn">
+      <span class="nav-icon">📝</span>
+      <span class="nav-text">Drafts</span>
+      <span class="nav-badge" id="draftCountMobile">0</span>
+    </button>
+    
+    <button data-target="reports" class="nav-btn">
+      <span class="nav-icon">📈</span>
+      <span class="nav-text">Reports</span>
+    </button>
+    
+    <button data-target="settings" class="nav-btn">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-text">Settings</span>
+    </button>
   </nav>
 
-  <!-- Templates -->
-  <div id="receiptTemplate" class="receipt" hidden>
-    <div class="doc-header">
-      <img src="logo.png" class="receipt-logo" alt="logo" />
-      <div class="company-block">
-        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
-        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
-      </div>
-      <div class="doc-title">
-        <div class="type">RECEIPT</div>
-        <div class="sub">System Generated</div>
-      </div>
+  <!-- Toast Notifications -->
+  <div id="toast" class="toast hidden" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-content">
+      <span class="toast-icon">ℹ️</span>
+      <span class="toast-message">Notification message</span>
     </div>
+    <button class="toast-close" aria-label="Close">
+      <span>&times;</span>
+    </button>
+  </div>
 
-    <div class="doc-meta">
-      <div class="meta-row"><b>Receipt #</b><span id="rReceiptNo"></span></div>
-      <div class="meta-row"><b>Date</b><span id="rDate"></span></div>
-      <div class="meta-row"><b>Customer</b><span id="rCustomer"></span></div>
-      <div class="meta-row"><b>Status</b><span id="rPayStatus" class="badge paid">PAID</span></div>
-      <div class="meta-row"><b>Method</b><span id="rPayMethod"></span></div>
-      <div class="meta-row"><b>Notes</b><span id="rNotes"></span></div>
-    </div>
-
-    <table class="inv-table">
-      <thead>
-        <tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr>
-      </thead>
-      <tbody id="receiptItems"></tbody>
-    </table>
-
-    <div class="r-totals">
-      <div>Subtotal: <span id="rSubtotal"></span></div>
-      <div>Discount: <span id="rDiscount"></span></div>
-      <div>Tax: <span id="rTax"></span></div>
-      <div class="r-total">Total: <span id="rTotal"></span></div>
-    </div>
-
-    <div class="doc-footer">
-      <div class="footer-left">
-        <div><b>Note:</b> This document is system-generated by Deo Digital Admin Portal.</div>
-        <div>Scan QR to verify.</div>
+  <!-- Document Preview Modal -->
+  <div id="documentPreviewModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-overlay" id="previewOverlay"></div>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">Document Preview</h3>
+        <button class="modal-close" id="closePreview" aria-label="Close">
+          <span>&times;</span>
+        </button>
       </div>
-      <div class="footer-right">
-        <div class="signature">
-          <div class="sig" id="rAutoSignature">Deo Digital</div>
-          <div class="line"></div>
-          <div class="cap">Authorized Signature</div>
+      
+      <div class="modal-body">
+        <div class="preview-controls">
+          <div class="control-group">
+            <label for="previewTemplate" class="control-label">Template</label>
+            <select id="previewTemplate" class="control-select">
+              <option value="modern">Modern</option>
+              <option value="classic">Classic</option>
+              <option value="minimal">Minimal</option>
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label for="previewSize" class="control-label">View</label>
+            <select id="previewSize" class="control-select">
+              <option value="a4">A4 Size</option>
+              <option value="mobile">Mobile</option>
+              <option value="print">Print Preview</option>
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label class="control-label invisible">Edit</label>
+            <button id="editPreview" class="btn">
+              <span class="btn-icon">🎨</span> Customize
+            </button>
+          </div>
         </div>
-        <div id="stampContainer" class="stamp-container"></div>
-        <div id="receiptQR" class="qr"></div>
+        
+        <div id="livePreview" class="preview-container">
+          <div class="preview-placeholder">
+            <div class="placeholder-icon">📄</div>
+            <h4>Document Preview</h4>
+            <p>Your document will appear here</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn" id="cancelPreview">
+          <span class="btn-icon">✕</span> Cancel
+        </button>
+        <button class="btn btn-primary" id="exportFromPreview">
+          <span class="btn-icon">📤</span> Export Document
+        </button>
       </div>
     </div>
   </div>
 
-  <div id="invoiceTemplate" class="invoice-a4" hidden>
-    <header class="doc-header-a4">
-      <img src="logo.png" class="invoice-logo" alt="logo" />
-      <div class="company-block-a4">
-        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
-        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
-      </div>
-      <div class="doc-title">
-        <div class="type">INVOICE</div>
-        <div class="sub">System Generated</div>
-      </div>
-    </header>
-
-    <section class="invoice-meta">
-      <div class="meta-row"><b>Invoice #</b><span id="invNo"></span></div>
-      <div class="meta-row"><b>Date</b><span id="invDate"></span></div>
-      <div class="meta-row"><b>To</b><span id="invTo"></span></div>
-      <div class="meta-row"><b>Status</b><span id="invPayStatus" class="badge unpaid">UNPAID</span></div>
-      <div class="meta-row"><b>Method</b><span id="invPayMethod"></span></div>
-      <div class="meta-row"><b>Notes</b><span id="invNotes"></span></div>
+  <!-- Document Templates (hidden) -->
+  <div class="templates-container" style="display: none;">
+    <!-- INVOICE TEMPLATE -->
+    <section id="invoiceTemplate" class="doc doc-a4 template-modern">
+      <header class="doc-header">
+        <div class="doc-brand">
+          <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" class="doc-logo">
+          <div class="doc-brand-info">
+            <div class="doc-company">DEO DIGITAL SOLUTIONS</div>
+            <div class="doc-meta">Visualising Your Vision</div>
+            <div class="doc-meta">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
+          </div>
+        </div>
+        <div class="doc-status">
+          <div class="pill pill-paid" id="invStatus">Paid</div>
+          <div class="doc-title">INVOICE</div>
+          <div class="doc-meta">
+            <span>Invoice No: <span id="invNumber">INV-2024-001</span></span>
+            <span>Issue: <span id="invIssueDate">—</span></span>
+            <span>Due: <span id="invDueDate">—</span></span>
+            <span>Currency: UGX</span>
+          </div>
+        </div>
+      </header>
+      
+      <section class="doc-parties">
+        <div class="party from">
+          <h3>From</h3>
+          <div class="party-details">
+            <div class="party-name">DEO DIGITAL SOLUTIONS</div>
+            <div class="party-address">Kampala, Uganda</div>
+            <div class="party-contact">Email: deoug45@gmail.com</div>
+            <div class="party-contact">Phone: 0762886186</div>
+          </div>
+        </div>
+        
+        <div class="party to">
+          <h3>Bill To</h3>
+          <div class="party-details">
+            <div class="party-name" id="invClientName">Client Name</div>
+            <div class="party-contact" id="invClientContact">Contact information</div>
+            <div class="party-address" id="invClientAddress">Address / Location</div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="doc-table">
+        <div class="table-header">
+          <div>Description</div>
+          <div>Qty</div>
+          <div>Unit Price</div>
+          <div>Discount</div>
+          <div>Tax</div>
+          <div>Total</div>
+        </div>
+        <div id="invItems" class="table-body">
+          <div class="table-row empty">
+            <div colspan="6">No items</div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="doc-totals">
+        <div class="notes-section">
+          <h4>Notes / Terms</h4>
+          <div class="notes-content" id="invNotes">
+            Payment due in 7 days. Thank you for your business.
+          </div>
+        </div>
+        
+        <div class="totals-section">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <b id="invSubtotal">UGX 0</b>
+          </div>
+          <div class="total-row">
+            <span>Discounts</span>
+            <b id="invDiscount">UGX 0</b>
+          </div>
+          <div class="total-row">
+            <span>Tax/VAT</span>
+            <b id="invTax">UGX 0</b>
+          </div>
+          <div class="total-row">
+            <span>Shipping/Fees</span>
+            <b id="invFees">UGX 0</b>
+          </div>
+          <div class="total-row grand-total">
+            <span>Total</span>
+            <b id="invTotal">UGX 0</b>
+          </div>
+          <div class="total-row">
+            <span>Paid</span>
+            <b id="invPaid">UGX 0</b>
+          </div>
+          <div class="total-row">
+            <span>Balance Due</span>
+            <b id="invBalance">UGX 0</b>
+          </div>
+          
+          <div class="payment-info">
+            <div class="info-row">
+              <span>Payment Method:</span>
+              <span id="invPayMethod">Cash</span>
+            </div>
+            <div class="info-row">
+              <span>Payment Status:</span>
+              <span id="invPayStatus">Paid</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="doc-footer">
+        <div class="verification-section">
+          <div id="invQR" class="qr-container"></div>
+          <div class="hash-info">
+            <div class="hash-label">Verification Hash:</div>
+            <div class="hash-value" id="invHash">—</div>
+            <div class="hash-note">Scan QR to verify authenticity</div>
+          </div>
+        </div>
+        
+        <div class="footer-meta">
+          <div class="meta-info">
+            Issued by <span id="invIssuer">admin@domain.com</span> • 
+            Generated on <span id="invGenerated">—</span>
+          </div>
+          <div class="page-info">
+            Page <span class="page-num">1</span> • 
+            Powered by Deo Digital Admin Portal
+          </div>
+        </div>
+      </section>
     </section>
 
-    <table id="invItems" class="inv-table">
-      <thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead>
-      <tbody></tbody>
-    </table>
-
-    <div class="inv-summary">
-      <div>Subtotal: <span id="invSubtotal"></span></div>
-      <div>Discount: <span id="invDiscount"></span></div>
-      <div>Tax: <span id="invTax"></span></div>
-      <div class="big">Total: <span id="invTotal"></span></div>
-    </div>
-
-    <div class="doc-footer">
-      <div class="footer-left">
-        <div><b>Terms:</b> Payment due upon receipt unless otherwise agreed.</div>
-        <div>Scan QR to verify.</div>
-      </div>
-      <div class="footer-right">
-        <div class="signature">
-          <div class="sig" id="invAutoSignature">Deo Digital</div>
-          <div class="line"></div>
-          <div class="cap">Authorized Signature</div>
+    <!-- RECEIPT TEMPLATE -->
+    <section id="receiptTemplate" class="doc doc-receipt template-modern">
+      <header class="doc-header">
+        <div class="doc-brand">
+          <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" class="doc-logo">
+          <div class="doc-brand-info">
+            <div class="doc-company">DEO DIGITAL SOLUTIONS</div>
+            <div class="doc-meta">RECEIPT</div>
+          </div>
         </div>
-        <div id="invStamp" class="stamp-container-small"></div>
-        <div id="invQR" class="qr"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="quoteTemplate" class="invoice-a4" hidden>
-    <header class="doc-header-a4">
-      <img src="logo.png" class="invoice-logo" alt="logo" />
-      <div class="company-block-a4">
-        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
-        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
-      </div>
-      <div class="doc-title">
-        <div class="type">QUOTATION</div>
-        <div class="sub">System Generated</div>
-      </div>
-    </header>
-
-    <section class="invoice-meta">
-      <div class="meta-row"><b>Quote #</b><span id="qNo"></span></div>
-      <div class="meta-row"><b>Date</b><span id="qDate"></span></div>
-      <div class="meta-row"><b>To</b><span id="qTo"></span></div>
-      <div class="meta-row"><b>Valid Until</b><span id="qValidUntil"></span></div>
-      <div class="meta-row"><b>Status</b><span id="qStatus" class="badge">PENDING</span></div>
-      <div class="meta-row"><b>Notes</b><span id="qNotes"></span></div>
+        <div class="pill pill-paid" id="recStatus">Paid</div>
+      </header>
+      
+      <section class="doc-meta-info">
+        <div class="meta-row">
+          <span>Receipt No: <strong id="recNumber">RC-2024-001</strong></span>
+          <span>Date: <span id="recDate">—</span></span>
+          <span>Currency: UGX</span>
+        </div>
+        <div class="meta-row">
+          <span>Customer: <strong id="recCustomer">Walk-in</strong></span>
+          <span>Contact: <span id="recContact">—</span></span>
+        </div>
+      </section>
+      
+      <section class="doc-items">
+        <div class="items-header">
+          <div>Item</div>
+          <div>Total</div>
+        </div>
+        <div id="recItems" class="items-body">
+          <div class="item-row empty">
+            <div colspan="2">No items</div>
+          </div>
+        </div>
+      </section>
+      
+      <section class="doc-totals">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <b id="recSubtotal">UGX 0</b>
+        </div>
+        <div class="total-row">
+          <span>Discount</span>
+          <b id="recDiscount">UGX 0</b>
+        </div>
+        <div class="total-row">
+          <span>Tax/VAT</span>
+          <b id="recTax">UGX 0</b>
+        </div>
+        <div class="total-row grand-total">
+          <span>Total</span>
+          <b id="recTotal">UGX 0</b>
+        </div>
+        <div class="total-row">
+          <span>Paid (Cash/MM/Bank)</span>
+          <b id="recPaid">UGX 0</b>
+        </div>
+        <div class="total-row">
+          <span>Change / Balance</span>
+          <b id="recChange">UGX 0</b>
+        </div>
+      </section>
+      
+      <section class="doc-footer">
+        <div class="verification-section">
+          <div id="recQR" class="qr-container"></div>
+          <div class="hash-info">
+            <div class="hash-label">Hash:</div>
+            <div class="hash-value" id="recHash">—</div>
+          </div>
+        </div>
+        
+        <div class="footer-meta">
+          <div class="thank-you">Thank you for your business!</div>
+          <div class="contact-info">
+            Powered by Deo Digital Admin Portal • 
+            deoug45@gmail.com • www.deodigital.com
+          </div>
+        </div>
+      </section>
     </section>
 
-    <table class="inv-table">
-      <thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead>
-      <tbody id="qItems"></tbody>
-    </table>
-
-    <div class="inv-summary">
-      <div class="big">Total: <span id="qTotal"></span></div>
-    </div>
-
-    <div class="doc-footer">
-      <div class="footer-left">
-        <div>Thank you for choosing Deo Digital Solutions.</div>
-        <div>Scan QR to verify.</div>
-      </div>
-      <div class="footer-right">
-        <div class="signature">
-          <div class="sig" id="qAutoSignature">Deo Digital</div>
-          <div class="line"></div>
-          <div class="cap">Authorized Signature</div>
+    <!-- REPORT TEMPLATE -->
+    <section id="reportTemplate" class="doc doc-a4 template-modern">
+      <header class="doc-header">
+        <div class="doc-brand">
+          <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" class="doc-logo">
+          <div class="doc-brand-info">
+            <div class="doc-company">DEO DIGITAL SOLUTIONS</div>
+            <div class="doc-meta" id="repTitle">Business Report</div>
+            <div class="doc-meta">Period: <span id="repRange">—</span></div>
+          </div>
         </div>
-        <div id="qStamp" class="stamp-container-small"></div>
-        <div id="qQR" class="qr"></div>
-      </div>
-    </div>
+        <div class="doc-meta">
+          <div>Generated: <span id="repGenerated">—</span></div>
+          <div>By: <span id="repUser">admin@domain.com</span></div>
+          <div>Filters: <span id="repFilters">—</span></div>
+        </div>
+      </header>
+      
+      <section class="kpi-strip">
+        <div class="kpi">
+          <div>Revenue</div>
+          <b id="repRevenue">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>COGS</div>
+          <b id="repCOGS">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>Expenses</div>
+          <b id="repExpenses">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>Net Profit</div>
+          <b id="repNet">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>Capital In</div>
+          <b id="repCapIn">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>Capital Out</div>
+          <b id="repCapOut">UGX 0</b>
+        </div>
+        <div class="kpi">
+          <div>Available Funds</div>
+          <b id="repFunds">UGX 0</b>
+        </div>
+      </section>
+      
+      <!-- Report sections will be populated by JavaScript -->
+      <div id="reportSections"></div>
+      
+      <section class="doc-footer">
+        <div class="footer-meta">
+          <div class="confidential">CONFIDENTIAL</div>
+          <div class="page-info">
+            Powered by Deo Digital Admin Portal • www.deodigital.com • 
+            Page <span class="page-num">1</span>
+          </div>
+        </div>
+      </section>
+    </section>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="hidden" style="
-    position:fixed; left:50%; transform:translateX(-50%);
-    bottom:92px; z-index:99; max-width:min(520px, 92vw);
-    background:rgba(10,15,26,.92); color:#EAF2FF;
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:16px; padding:12px 14px; box-shadow:0 18px 45px rgba(0,0,0,.45);
-    backdrop-filter: blur(14px);
-  "></div>
-
+  <!-- Scripts -->
   <script src="app.js"></script>
+  
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').catch(()=>{/* ignore */});
-    }
-    // Always hide loader even if Firebase or app.js errors happen
-  (function () {
-    const hide = () => document.getElementById('appLoader')?.classList.add('hide');
-    document.addEventListener('DOMContentLoaded', () => setTimeout(hide, 300));
-    window.addEventListener('load', () => setTimeout(hide, 300));
-    // Hard fallback: never stay stuck
-    setTimeout(hide, 4000);
-  })();
+    // Initialize loader
+    (function () {
+      const loader = document.getElementById('appLoader');
+      const hideLoader = () => {
+        if (loader) {
+          loader.classList.add('hide');
+          setTimeout(() => {
+            if (loader.parentNode) {
+              loader.style.display = 'none';
+            }
+          }, 500);
+        }
+      };
+      
+      // Hide loader when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(hideLoader, 800);
+        });
+      } else {
+        setTimeout(hideLoader, 800);
+      }
+      
+      // Force hide after 3 seconds
+      setTimeout(hideLoader, 3000);
+    })();
   </script>
   
+  <script>
+    // Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
+          console.log('ServiceWorker registered: ', registration);
+        }).catch(err => {
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+    
+    // Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallPrompt();
+    });
+    
+    function showInstallPrompt() {
+      // You can show a custom install button here
+      console.log('PWA install available');
+    }
+  </script>
 </body>
 </html>
