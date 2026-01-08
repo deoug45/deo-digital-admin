@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // helper: check role custom claim: 'owner' or 'staff'
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isStaffOrOwner() {
+      return isAuthenticated() && (request.auth.token.role == 'owner' || request.auth.token.role == 'staff');
+    }
+    function isOwner() {
+      return isAuthenticated() && request.auth.token.role == 'owner';
+    }
+
+    // settings (company) - owner/staff can update
+    match /settings/{doc} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isOwner(); // only owner can change critical settings
+    }
+
+    // documents (finalized sales/invoices) - create by staff/owner; finalized fields only by owner or trusted function
+    match /documents/{docId} {
+      allow read: if isAuthenticated();
+      allow create: if isStaffOrOwner();
+      allow update: if isOwner(); // to allow owner or trusted backend to attach pdfHash/signature
+      allow delete: if isOwner();
+      // prevent clients from setting certain fields on create (enforced client-side as well)
+      // Note: additional validation rules can be added here.
+    }
+
+    // drafts - create/update by staff/owner
+    match /drafts/{docId} {
+      allow read, write: if isStaffOrOwner();
+    }
+
+    // expenses
+    match /expenses/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isStaffOrOwner();
+      allow update, delete: if isOwner();
+    }
+
+    // capital entries
+    match /capital_entries/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isStaffOrOwner();
+      allow update, delete: if isOwner();
+    }
+
+    // clients
+    match /clients/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isStaffOrOwner();
+      allow update, delete: if isOwner();
+    }
+
+    // proposed clients
+    match /proposedClients/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isStaffOrOwner();
+      allow update, delete: if isOwner();
+    }
+
+    // expenses / uploads etc. (you may add subcollections)
+    // auditLogs - only owner or backend may write
+    match /auditLogs/{id} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(); // ideally written by backend
+    }
+
+    // default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

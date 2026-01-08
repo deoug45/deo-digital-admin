@@ -1,0 +1,27 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Logos: public read, write only by authenticated owner/staff
+    match /logos/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.role in ['owner','staff'];
+    }
+
+    // documents (finalized PDFs/JPEGs): write by owner/staff or backend, read only by owner/staff or via signed URL
+    match /documents/{docId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.token.role in ['owner','staff'];
+      allow write: if request.auth != null && request.auth.token.role in ['owner','staff'];
+    }
+
+    // receipts temp uploads (if any)
+    match /temp/{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+
+    // default deny
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

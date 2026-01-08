@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#056FB2" />
+  <title>Deo Digital Admin Portal — DEO DIGITAL SOLUTIONS</title>
+
+  <!-- Favicon / icons -->
+  <link rel="icon" href="favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Firebase (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+
+  <!-- Utilities -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+  <!-- App Loader (PWA launch / page load) -->
+  <div id="appLoader" class="app-loader" aria-live="polite">
+    <div class="loader-card">
+      <img src="logo.png" class="loader-logo" alt="Deo Digital Solutions">
+      <div class="loader-title">Deo Digital Admin Portal</div>
+      <div class="loader-sub">Loading…</div>
+      <div class="loader-bar"><span></span></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="sidebar hidden" aria-label="Sidebar navigation">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo" />
+      <div class="company-info">
+        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
+        <div class="company-slogan">Visualising Your Vision</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Sections">
+      <button data-target="dashboard" class="side-btn">Dashboard</button>
+      <button data-target="documents" class="side-btn">Documents</button>
+      <button data-target="newSale" class="side-btn">New Sale</button>
+      <button data-target="quotes" class="side-btn">Quotes</button>
+      <button data-target="expenses" class="side-btn">Expenses</button>
+      <button data-target="capital" class="side-btn">Capital</button>
+      <button data-target="clients" class="side-btn">Clients</button>
+      <button data-target="drafts" class="side-btn">Drafts</button>
+      <button data-target="reports" class="side-btn">Reports</button>
+      <button data-target="settings" class="side-btn">Settings</button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div><a href="mailto:deoug45@gmail.com">deoug45@gmail.com</a></div>
+      <div><a href="https://www.deodigital.com" target="_blank" rel="noopener">www.deodigital.com</a></div>
+      <div>Tel: 0762886186</div>
+      <div style="margin-top:8px; opacity:.85" id="sbUserLine"></div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="top-left">
+      <!-- Optional hamburger (logo also toggles menu) -->
+      <button id="hamburger" class="hamburger" aria-label="Menu">☰</button>
+
+      <div class="brand">
+        <img src="logo.png" alt="Logo" id="brandLogo" role="button" tabindex="0" title="Menu" />
+        <div class="brand-text">
+          <h1>DEO DIGITAL SOLUTIONS</h1>
+          <small>Deo Digital Admin Portal • Visualising Your Vision</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="top-right">
+      <div class="contact-mini">
+        <a href="mailto:deoug45@gmail.com">deoug45@gmail.com</a>
+        <a href="https://www.deodigital.com" target="_blank" rel="noopener">www.deodigital.com</a>
+      </div>
+      <button id="signOutBtnTop" class="btn">Sign out</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <!-- AUTH -->
+    <section id="auth" class="panel card">
+      <div class="auth-wrap">
+        <div class="auth-hero">
+          <div class="logo-row">
+            <img src="logo.png" alt="DEO DIGITAL SOLUTIONS logo">
+            <div>
+              <div class="title">DEO DIGITAL SOLUTIONS</div>
+              <div class="tag">Visualising Your Vision</div>
+            </div>
+          </div>
+
+          <ul class="bullets">
+            <li>Manage Sales, Quotes, Expenses, Capital and Clients.</li>
+            <li>Professional documents with Stamp, QR verification and Signature.</li>
+            <li>Admin-only internal access.</li>
+          </ul>
+        </div>
+
+        <div class="auth-form">
+          <h2>Admin Sign In</h2>
+          <div class="auth-sub">Sign in to manage your business paperwork digitally.</div>
+
+          <div class="grid">
+            <input id="email" type="email" placeholder="admin@domain.com" autocomplete="username" />
+            <input id="password" type="password" placeholder="password" autocomplete="current-password" />
+          </div>
+
+          <div class="actions">
+            <button id="signInBtn" class="btn primary">Sign in</button>
+            <button id="signOutBtn" class="btn ghost hidden" type="button">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="panel card hidden">
+      <div class="dash-top">
+        <div>
+          <h2>Dashboard</h2>
+          <small>Real-time overview</small>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat card s-blue">
+          <div class="stat-title">Revenue</div>
+          <div class="stat-value" id="rangeRevenue">UGX 0</div>
+        </div>
+        <div class="stat card s-green">
+          <div class="stat-title">Net Profit</div>
+          <div class="stat-value" id="rangeProfit">UGX 0</div>
+        </div>
+        <div class="stat card s-yellow">
+          <div class="stat-title">Expenses</div>
+          <div class="stat-value" id="rangeExpenses">UGX 0</div>
+        </div>
+        <div class="stat card s-blue-light">
+          <div class="stat-title">Available Funds</div>
+          <div class="stat-value" id="availableFunds">UGX 0</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin:0 0 10px;">Recent Documents</h3>
+        <ul id="recentSales" class="list"></ul>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin:0 0 10px;">Alerts</h3>
+        <ul class="list">
+          <li><div>Pending quotes</div><div id="pendingQuotesCount">0</div></li>
+          <li><div>Draft documents</div><div id="draftCount">0</div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- DOCUMENTS -->
+    <section id="documents" class="panel card hidden">
+      <div class="section-header">
+        <h2>Documents</h2>
+        <div class="section-actions">
+          <button id="refreshDocsBtn" class="btn">Refresh</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <input id="docSearch" placeholder="Search by customer / notes / document ID">
+        <select id="docTypeFilter">
+          <option value="all">All types</option>
+          <option value="sale">Sales</option>
+          <option value="quote">Quotes</option>
+        </select>
+        <input id="docFrom" type="date">
+        <input id="docTo" type="date">
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <ul id="documentsList" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- NEW SALE -->
+    <section id="newSale" class="panel card hidden">
+      <div class="section-header">
+        <h2>New Sale</h2>
+        <div class="section-actions">
+          <button id="saveDraftBtn" class="btn">Save Draft</button>
+          <button id="saveAndPrintBtn" class="btn primary">Finalize & Receipt (JPG)</button>
+          <button id="saveAndInvoiceBtn" class="btn">Finalize & Invoice (PDF)</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <input id="saleCustomer" placeholder="Customer name (optional)">
+        <input id="saleNotes" placeholder="Notes">
+        <select id="paymentMethod">
+          <option value="cash">Cash</option>
+          <option value="mobile_money">Mobile Money</option>
+          <option value="bank">Bank</option>
+        </select>
+        <select id="paymentStatus">
+          <option value="paid">Paid</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="partial">Partial</option>
+        </select>
+      </div>
+
+      <div id="itemsList" class="items-list"></div>
+
+      <div class="form-row">
+        <input id="productName" placeholder="Product / Service">
+        <input id="qty" type="number" min="1" value="1" />
+        <input id="unitPrice" placeholder="Sale price (UGX)" inputmode="numeric" />
+        <input id="costPrice" placeholder="Cost price (UGX)" inputmode="numeric" />
+        <button id="addItemBtn" class="btn">Add</button>
+      </div>
+
+      <div class="form-row">
+        <input id="discount" placeholder="Discount (UGX) e.g. 5000" inputmode="numeric">
+        <input id="tax" placeholder="Tax/VAT (UGX) e.g. 0" inputmode="numeric">
+        <div></div><div></div>
+      </div>
+
+      <div class="totals card">
+        <div>Subtotal: <span id="saleSubtotal">UGX 0</span></div>
+        <div>Discount: <span id="saleDiscount">UGX 0</span></div>
+        <div>Tax: <span id="saleTax">UGX 0</span></div>
+        <div class="big">Total: <span id="saleTotal">UGX 0</span></div>
+      </div>
+    </section>
+
+    <!-- QUOTES -->
+    <section id="quotes" class="panel card hidden">
+      <div class="section-header">
+        <h2>Quotes</h2>
+        <div class="section-actions">
+          <button id="newQuoteBtn" class="btn">New Quote</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <button class="btn" data-quote-filter="all">All</button>
+        <button class="btn" data-quote-filter="draft">Draft</button>
+        <button class="btn" data-quote-filter="pending">Pending</button>
+        <button class="btn" data-quote-filter="approved">Approved</button>
+      </div>
+
+      <div id="quoteEditor" class="card hidden" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin-top:0;">Create Quote</h3>
+
+        <div class="form-row">
+          <input id="quoteCustomer" placeholder="Customer name">
+          <input id="quoteNotes" placeholder="Notes">
+          <input id="quoteValidUntil" type="date">
+          <select id="quoteCurrency">
+            <option value="UGX">UGX</option>
+          </select>
+        </div>
+
+        <div id="quoteItemsList" class="items-list"></div>
+
+        <div class="form-row">
+          <input id="qProductName" placeholder="Item / Service">
+          <input id="qQty" type="number" min="1" value="1" />
+          <input id="qUnitPrice" placeholder="Sale price (UGX)">
+          <input id="qCostPrice" placeholder="Cost price (UGX)">
+          <button id="addQuoteItemBtn" class="btn">Add</button>
+        </div>
+
+        <div class="totals card">
+          <div>Quote Total: <span id="quoteTotal">UGX 0</span></div>
+        </div>
+
+        <div class="section-actions" style="padding:0 0 6px;">
+          <button id="saveQuoteDraft" class="btn">Save Quote Draft</button>
+          <button id="sendQuoteBtn" class="btn primary">Save & Send Quote</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin:0 0 10px;">Existing Quotes</h3>
+        <ul id="quotesList" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- EXPENSES -->
+    <section id="expenses" class="panel card hidden">
+      <div class="section-header">
+        <h2>Expenses</h2>
+      </div>
+
+      <div class="form-row">
+        <input id="expVendor" placeholder="Vendor">
+        <input id="expAmount" placeholder="Amount (UGX)" inputmode="numeric" />
+        <select id="expCategory">
+          <option value="general">General</option>
+          <option value="rent">Rent</option>
+          <option value="transport">Transport</option>
+          <option value="internet">Internet</option>
+          <option value="supplies">Supplies</option>
+          <option value="salary">Salary</option>
+        </select>
+        <input id="expNotes" placeholder="Notes" />
+      </div>
+
+      <div class="form-row">
+        <input id="expReceiptFile" type="file" accept="image/*">
+        <button id="addExpenseBtn" class="btn primary">Add Expense</button>
+        <div></div><div></div>
+      </div>
+
+      <ul id="expensesList" class="list" style="padding:0 16px 16px;"></ul>
+    </section>
+
+    <!-- CAPITAL -->
+    <section id="capital" class="panel card hidden">
+      <div class="section-header">
+        <h2>Capital</h2>
+      </div>
+
+      <div class="form-row">
+        <select id="capType">
+          <option value="injection">Injection (Add)</option>
+          <option value="distribution">Distribution (Withdraw)</option>
+        </select>
+        <input id="capAmount" placeholder="Amount (UGX)" inputmode="numeric" />
+        <input id="capNotes" placeholder="Notes" />
+        <button id="addCapitalBtn" class="btn primary">Add</button>
+      </div>
+
+      <ul id="capitalList" class="list" style="padding:0 16px 16px;"></ul>
+    </section>
+
+    <!-- CLIENTS -->
+    <section id="clients" class="panel card hidden">
+      <div class="section-header">
+        <h2>Clients</h2>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin-top:0;">Add Client</h3>
+        <div class="form-row">
+          <input id="clientName" placeholder="Client name">
+          <input id="clientPhone" placeholder="Phone">
+          <input id="clientEmail" placeholder="Email">
+          <input id="clientLocation" placeholder="Location">
+        </div>
+        <div class="section-actions">
+          <button id="addClientBtn" class="btn primary">Add Client</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin-top:0;">Proposed</h3>
+        <div class="form-row">
+          <input id="propName" placeholder="Proposed client name">
+          <input id="propContact" placeholder="Contact">
+          <button id="addProposedBtn" class="btn">Add Proposed</button>
+          <div></div>
+        </div>
+        <ul id="proposedList" class="list"></ul>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin-top:0;">Clients List</h3>
+        <ul id="clientsList" class="list"></ul>
+      </div>
+
+      <div id="clientDrawer" class="card hidden" style="margin:0 16px 16px; padding:16px;">
+        <div style="display:flex; justify-content:space-between; gap:10px;">
+          <div>
+            <div style="font-weight:1000; font-size:16px;" id="clientDrawerName">Client</div>
+            <div style="color:rgba(234,242,255,.72); font-size:12px;" id="clientDrawerMeta"></div>
+          </div>
+          <button class="btn" id="closeClientDrawer">Close</button>
+        </div>
+        <div style="margin-top:12px; font-weight:900;">Client Documents</div>
+        <ul id="clientDocsList" class="list" style="margin-top:10px;"></ul>
+      </div>
+    </section>
+
+    <!-- DRAFTS -->
+    <section id="drafts" class="panel card hidden">
+      <div class="section-header">
+        <h2>Drafts</h2>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <ul id="draftsList" class="list"></ul>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="reports" class="panel card hidden">
+      <div class="section-header">
+        <h2>Reports</h2>
+        <div class="section-actions">
+          <button id="exportReportPDF" class="btn">Download Report (PDF)</button>
+          <button id="exportReportCSV" class="btn">Download Report (CSV)</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <select id="reportType">
+          <option value="summary">Summary (Profit & Loss)</option>
+          <option value="sales">Sales Report</option>
+          <option value="expenses">Expenses Report</option>
+          <option value="capital">Capital Statement</option>
+        </select>
+        <input id="reportFrom" type="date">
+        <input id="reportTo" type="date">
+        <button id="runReport" class="btn primary">Run Report</button>
+      </div>
+
+      <div id="reportResult" class="card" style="margin:0 16px 16px; padding:16px;"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="settings" class="panel card hidden">
+      <div class="section-header">
+        <h2>Settings</h2>
+      </div>
+
+      <div class="card" style="margin:0 16px 16px; padding:16px;">
+        <h3 style="margin-top:0;">Company</h3>
+        <div class="form-row">
+          <input id="setCompanyName" placeholder="Company name" value="DEO DIGITAL SOLUTIONS">
+          <input id="setCompanyEmail" placeholder="Company email" value="deoug45@gmail.com">
+          <input id="setCompanyWebsite" placeholder="Website" value="www.deodigital.com">
+          <input id="setCompanyPhone" placeholder="Phone" value="0762886186">
+        </div>
+        <div class="section-actions">
+          <button id="saveSettingsBtn" class="btn primary">Save Settings</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom nav (mobile) — all sections -->
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <button data-target="dashboard" class="nav-btn active">Home</button>
+    <button data-target="documents" class="nav-btn">Docs</button>
+    <button data-target="newSale" class="nav-btn">Sales</button>
+    <button data-target="quotes" class="nav-btn">Quotes</button>
+    <button data-target="expenses" class="nav-btn">Expenses</button>
+    <button data-target="capital" class="nav-btn">Capital</button>
+    <button data-target="clients" class="nav-btn">Clients</button>
+    <button data-target="drafts" class="nav-btn">Drafts</button>
+    <button data-target="reports" class="nav-btn">Reports</button>
+    <button data-target="settings" class="nav-btn">Settings</button>
+  </nav>
+
+  <!-- Templates -->
+  <div id="receiptTemplate" class="receipt" hidden>
+    <div class="doc-header">
+      <img src="logo.png" class="receipt-logo" alt="logo" />
+      <div class="company-block">
+        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
+        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
+      </div>
+      <div class="doc-title">
+        <div class="type">RECEIPT</div>
+        <div class="sub">System Generated</div>
+      </div>
+    </div>
+
+    <div class="doc-meta">
+      <div class="meta-row"><b>Receipt #</b><span id="rReceiptNo"></span></div>
+      <div class="meta-row"><b>Date</b><span id="rDate"></span></div>
+      <div class="meta-row"><b>Customer</b><span id="rCustomer"></span></div>
+      <div class="meta-row"><b>Status</b><span id="rPayStatus" class="badge paid">PAID</span></div>
+      <div class="meta-row"><b>Method</b><span id="rPayMethod"></span></div>
+      <div class="meta-row"><b>Notes</b><span id="rNotes"></span></div>
+    </div>
+
+    <table class="inv-table">
+      <thead>
+        <tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr>
+      </thead>
+      <tbody id="receiptItems"></tbody>
+    </table>
+
+    <div class="r-totals">
+      <div>Subtotal: <span id="rSubtotal"></span></div>
+      <div>Discount: <span id="rDiscount"></span></div>
+      <div>Tax: <span id="rTax"></span></div>
+      <div class="r-total">Total: <span id="rTotal"></span></div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="footer-left">
+        <div><b>Note:</b> This document is system-generated by Deo Digital Admin Portal.</div>
+        <div>Scan QR to verify.</div>
+      </div>
+      <div class="footer-right">
+        <div class="signature">
+          <div class="sig" id="rAutoSignature">Deo Digital</div>
+          <div class="line"></div>
+          <div class="cap">Authorized Signature</div>
+        </div>
+        <div id="stampContainer" class="stamp-container"></div>
+        <div id="receiptQR" class="qr"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="invoiceTemplate" class="invoice-a4" hidden>
+    <header class="doc-header-a4">
+      <img src="logo.png" class="invoice-logo" alt="logo" />
+      <div class="company-block-a4">
+        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
+        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
+      </div>
+      <div class="doc-title">
+        <div class="type">INVOICE</div>
+        <div class="sub">System Generated</div>
+      </div>
+    </header>
+
+    <section class="invoice-meta">
+      <div class="meta-row"><b>Invoice #</b><span id="invNo"></span></div>
+      <div class="meta-row"><b>Date</b><span id="invDate"></span></div>
+      <div class="meta-row"><b>To</b><span id="invTo"></span></div>
+      <div class="meta-row"><b>Status</b><span id="invPayStatus" class="badge unpaid">UNPAID</span></div>
+      <div class="meta-row"><b>Method</b><span id="invPayMethod"></span></div>
+      <div class="meta-row"><b>Notes</b><span id="invNotes"></span></div>
+    </section>
+
+    <table id="invItems" class="inv-table">
+      <thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="inv-summary">
+      <div>Subtotal: <span id="invSubtotal"></span></div>
+      <div>Discount: <span id="invDiscount"></span></div>
+      <div>Tax: <span id="invTax"></span></div>
+      <div class="big">Total: <span id="invTotal"></span></div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="footer-left">
+        <div><b>Terms:</b> Payment due upon receipt unless otherwise agreed.</div>
+        <div>Scan QR to verify.</div>
+      </div>
+      <div class="footer-right">
+        <div class="signature">
+          <div class="sig" id="invAutoSignature">Deo Digital</div>
+          <div class="line"></div>
+          <div class="cap">Authorized Signature</div>
+        </div>
+        <div id="invStamp" class="stamp-container-small"></div>
+        <div id="invQR" class="qr"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quoteTemplate" class="invoice-a4" hidden>
+    <header class="doc-header-a4">
+      <img src="logo.png" class="invoice-logo" alt="logo" />
+      <div class="company-block-a4">
+        <div class="company-name">DEO DIGITAL SOLUTIONS</div>
+        <div class="company-contact">deoug45@gmail.com • www.deodigital.com • 0762886186</div>
+      </div>
+      <div class="doc-title">
+        <div class="type">QUOTATION</div>
+        <div class="sub">System Generated</div>
+      </div>
+    </header>
+
+    <section class="invoice-meta">
+      <div class="meta-row"><b>Quote #</b><span id="qNo"></span></div>
+      <div class="meta-row"><b>Date</b><span id="qDate"></span></div>
+      <div class="meta-row"><b>To</b><span id="qTo"></span></div>
+      <div class="meta-row"><b>Valid Until</b><span id="qValidUntil"></span></div>
+      <div class="meta-row"><b>Status</b><span id="qStatus" class="badge">PENDING</span></div>
+      <div class="meta-row"><b>Notes</b><span id="qNotes"></span></div>
+    </section>
+
+    <table class="inv-table">
+      <thead><tr><th>Description</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead>
+      <tbody id="qItems"></tbody>
+    </table>
+
+    <div class="inv-summary">
+      <div class="big">Total: <span id="qTotal"></span></div>
+    </div>
+
+    <div class="doc-footer">
+      <div class="footer-left">
+        <div>Thank you for choosing Deo Digital Solutions.</div>
+        <div>Scan QR to verify.</div>
+      </div>
+      <div class="footer-right">
+        <div class="signature">
+          <div class="sig" id="qAutoSignature">Deo Digital</div>
+          <div class="line"></div>
+          <div class="cap">Authorized Signature</div>
+        </div>
+        <div id="qStamp" class="stamp-container-small"></div>
+        <div id="qQR" class="qr"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="hidden" style="
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:92px; z-index:99; max-width:min(520px, 92vw);
+    background:rgba(10,15,26,.92); color:#EAF2FF;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px; padding:12px 14px; box-shadow:0 18px 45px rgba(0,0,0,.45);
+    backdrop-filter: blur(14px);
+  "></div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').catch(()=>{/* ignore */});
+    }
+    // Always hide loader even if Firebase or app.js errors happen
+  (function () {
+    const hide = () => document.getElementById('appLoader')?.classList.add('hide');
+    document.addEventListener('DOMContentLoaded', () => setTimeout(hide, 300));
+    window.addEventListener('load', () => setTimeout(hide, 300));
+    // Hard fallback: never stay stuck
+    setTimeout(hide, 4000);
+  })();
+  </script>
+  
+</body>
+</html>
